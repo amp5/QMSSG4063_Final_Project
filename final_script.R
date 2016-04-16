@@ -89,7 +89,7 @@ save(dem, file='dem.Rdata')
 save(rep, file='rep.Rdata')
 save (all_filtered, file= 'all_filtered.Rdata')
 
-##### starting here.....after force quit
+##### starting here.....after force quit .... as a sample....
 setwd("/Users/amp2261/Desktop")
 load("HC.Rdata")
 load("BS.Rdata")
@@ -98,8 +98,7 @@ load("BS.Rdata")
 ###########################################
 ####### Creating Word Cloud ########
 ###########################################
-
-#making word cloud function
+# making word cloud function
 # adding in the name of the dataframe into this function will result in a worldcloud being generated
 wc <- function(filename){
   filename$text <- sapply(filename$text,function(row) iconv(row, "latin1", "ASCII", sub=""))
@@ -202,10 +201,8 @@ tweet_corp <- function(filename){
 }
 
 
-######
-# calling all the functions here
-######
 
+# calling all the functions here
 wc(HC)
 tc <- tweet_corp(BS)
 # wordcloud(tc, min.freq = 900,  max.words = 500, random.order = FALSE, colors = brewer.pal(4, "Dark2"))
@@ -279,7 +276,6 @@ map_gen_w <-function(filename){
 map_gen_s <-function(filename){
   filtered_file <- filename[complete.cases(filename) ,]
   filtered_file <- filtered_file[filtered_file$country_code=='US',] 
-  View(filtered_file)
   ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + 
     expand_limits(x = as.numeric(US_states$long), y = as.numeric(US_states$lat)) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + 
     theme_minimal() + geom_point(data = filtered_file, aes(x = as.numeric(place_lon), y = as.numeric(place_lat)), size = 1, alpha = 1/5, color = "blue")
@@ -319,6 +315,7 @@ as.numeric.factor <- function(x) {as.numeric(levels(x))[x]}
 
 state_mp_cnt <- function(filename){
   filtered_file <- filename[complete.cases(filename) ,]
+  filtered_file <- filtered_file[filtered_file$country_code=='US',] 
   geo_pts <- c("place_lon", "place_lat")
   df_pt <-  filtered_file[geo_pts]
   df_pt$place_lon <- as.numeric.factor(df_pt$place_lon)
@@ -341,94 +338,9 @@ state_mp_cnt <- function(filename){
 }
 
 ### calling functions
-
 map_gen_w(BS)
 map_gen_s(HC)
 state_mp_cnt(HC)
-
--------------------------------------
-
-useful_info <- c("text", "id_str", "created_at", "screen_name", "place_lat", "place_lon",  "lat", "lon", "country_code")
-HC_us <- HCT[HCT$country_code=='US',] 
-
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + 
-  expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + 
-  theme_minimal() + geom_point(data = HC_us, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
-
-
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + 
-  expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + 
-  theme_minimal() + geom_point(data = HC_us, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
-
-
-
-
-useful_info <- c("text", "id_str", "created_at", "screen_name", "place_lat", "place_lon",  "lat", "lon", "country_code")
-HC_us <- HC[HC$country_code=='US',] 
-BS_us <- BS[BS$country_code=='US',]
-TC_us <- TC[TC$country_code=='US',]
-DT_us <- DT[DT$country_code=='US',]
-MR_us <- MR[MR$country_code=='US',]
-
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = HC_us, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = BS_us, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = TC_us, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "red")
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = MR_us, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "red")
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = DT_us, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "red")
-
-geo_pts <- c("place_lon", "place_lat")
-HC_pt <-  HC_us[geo_pts]
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = HC_pt, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
-
-
-
-
-######################
-#Extra Credit Section
-######################
-
-latlong2county <- function(pointsDF) {
-  states <- map('county', fill=TRUE, col="transparent", plot=FALSE)
-  IDs <- sapply(strsplit(states$names, ":"), function(x) x[1])
-  states_sp <- map2SpatialPolygons(states, IDs=IDs,
-                                   proj4string=CRS("+proj=longlat +datum=wgs84"))
-  pointsSP <- SpatialPoints(pointsDF,
-                            proj4string=CRS("+proj=longlat +datum=wgs84"))
-  indices <- over(pointsSP, states_sp)
-  stateNames <- sapply(states_sp@polygons, function(x) x@ID)
-  stateNames[indices]
-}
-
-#import county list
-data(county.fips)
-
-################
-################
-################
-################
-################
-################
-county <- latlong2county(HC_pt)
-View(all_pt)
-
-#convert county names to fip code
-fips<-with(county.fips, fips[match(county, polyname)])
-US_pt1 <- US_pt
-US_pt1$fips <- fips 
-
-all_pt
-#count fips
-US_pt <- count(all_pt,"fips")
-
-#Transfer into a tab seperated value file to be used in D3
-write.table(US_pt1, file='UStweets.tsv', quote=FALSE, sep='\t')
-
-
-
-
-
-
-
 
 ##############################################
 ########## Sentiment Analysis ################
