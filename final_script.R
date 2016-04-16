@@ -259,9 +259,9 @@ ggplot(map.data) + geom_map(aes(map_id = region), map = map.data, fill = "#fdf9f
 ####### More Mapping #########
 ###########################################
 
+#### functions
+
 ## TODO: GET THIS SECTION OF THE CODE (OR YOUR CODE FROM HW 3 WORKING IN GENERAL) TO WORK! THEN MAKE IT INTO A FUNCTION. 
-
-
 world <- map_data("world")
 US_states <- map_data("state")
 ggplot()+ geom_polygon( data=world, aes(x=long, y=lat, group = group),colour="white", fill="grey10" )
@@ -278,6 +278,8 @@ map_gen_w <-function(filename){
 
 map_gen_s <-function(filename){
   filtered_file <- filename[complete.cases(filename) ,]
+  filtered_file <- filtered_file[filtered_file$country_code=='US',] 
+  View(filtered_file)
   ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + 
     expand_limits(x = as.numeric(US_states$long), y = as.numeric(US_states$lat)) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + 
     theme_minimal() + geom_point(data = filtered_file, aes(x = as.numeric(place_lon), y = as.numeric(place_lat)), size = 1, alpha = 1/5, color = "blue")
@@ -285,18 +287,11 @@ map_gen_s <-function(filename){
 }
 
 
-### calling functions
-
-map_gen_w(BS)
-map_gen_s(HC)
 
 
-#############################
-# Part 2 - Counting by State
-#############################
-
-
-#### functions
+#############
+# Counting by State
+#############
 
 # The single argument to this function, pointsDF, is a data.frame in which:
 #   - column 1 contains the longitude in degrees (negative in the US)
@@ -323,76 +318,35 @@ as.numeric.factor <- function(x) {as.numeric(levels(x))[x]}
 
 
 state_mp_cnt <- function(filename){
+  filtered_file <- filename[complete.cases(filename) ,]
   geo_pts <- c("place_lon", "place_lat")
-  df_pt <-  filename[geo_pts]
-  
+  df_pt <-  filtered_file[geo_pts]
   df_pt$place_lon <- as.numeric.factor(df_pt$place_lon)
+  
   df_pt$state <- latlong2state(df_pt)
   filtered_df <- df_pt[!(is.na(df_pt$state)),]
   count(filtered_df, "state")
   state_df <- count(filtered_df, "state")
+  print("two")
   
+  mapUSA <- map('state',  fill = TRUE,  plot = FALSE)
+  nms <- sapply(strsplit(mapUSA$names,  ':'),  function(x)x[1])
+  USApolygons <- map2SpatialPolygons(mapUSA,  IDs = nms,  CRS('+proj=longlat'))
+  idx <- match(unique(nms),  state_df$state)
+  dat2 <- data.frame(value = state_df$freq[idx], state = unique(nms))
+  row.names(dat2) <- unique(nms)
+  USAsp <- SpatialPolygonsDataFrame(USApolygons,  data = dat2)
+  print("three")
+  spplot(USAsp['value'], col.regions= rainbow(100, start = 3/6, end = 4/6 ))
 }
-
-
-
-
 
 ### calling functions
 
+map_gen_w(BS)
+map_gen_s(HC)
+state_mp_cnt(HC)
 
-geo_pts <- c("place_lon", "place_lat")
-HC_pt <-  HCT[geo_pts]
-BS_pt <- BS[geo_pts]
-
-
-HC_pt$place_lon <- as.numeric.factor(HC_pt$place_lon)
-
-
-
-TC_pt <- TC_us[geo_pts]
-DT_pt <- DT_us[geo_pts]
-MR_pt <- MR_us[geo_pts]
-
-all_pt <- rbind(HC_pt, BS_pt, TC_pt, DT_pt, MR_pt)
-
-#ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = HC_pt, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
-
-# problem here.......... with data 
-View(HC_pt)
-HC_pt$state <- latlong2state(HC_pt)
-filteredHC <- HC_pt[!(is.na(HC_pt$state)),]
-count(filteredHC, "state")
-state_HC <- count(filteredHC, "state")
-
-
-
-mapUSA <- map('state',  fill = TRUE,  plot = FALSE)
-nms <- sapply(strsplit(mapUSA$names,  ':'),  function(x)x[1])
-USApolygons <- map2SpatialPolygons(mapUSA,  IDs = nms,  CRS('+proj=longlat'))
-idx <- match(unique(nms),  state_HC$state)
-dat2 <- data.frame(value = state_HC$freq[idx], state = unique(nms))
-row.names(dat2) <- unique(nms)
-USAsp <- SpatialPolygonsDataFrame(USApolygons,  data = dat2)
-spplot(USAsp['value'], col.regions= rainbow(100, start = 3/6, end = 4/6 ))
-View(state_HC)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-------------------------------------
 
 useful_info <- c("text", "id_str", "created_at", "screen_name", "place_lat", "place_lon",  "lat", "lon", "country_code")
 HC_us <- HCT[HCT$country_code=='US',] 
@@ -408,85 +362,6 @@ ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey
 
 
 
-
-
-
-BS_pt$state <- latlong2state(BS_pt)
-filteredBS <- BS_pt[!(is.na(BS_pt$state)),]
-count(filteredBS, "state")
-state_BS <- count(filteredBS, "state")
-
-TC_pt$state <- latlong2state(TC_pt)
-filteredTC <- TC_pt[!(is.na(TC_pt$state)),]
-count(filteredTC, "state")
-state_TC <- count(filteredTC, "state")
-
-DT_pt$state <- latlong2state(DT_pt)
-filteredDT <- DT_pt[!(is.na(DT_pt$state)),]
-count(filteredDT, "state")
-state_DT <- count(filteredDT, "state")
-
-MR_pt$state <- latlong2state(MR_pt)
-filteredMR <- MR_pt[!(is.na(MR_pt$state)),]
-count(filteredMR, "state")
-state_MR <- count(filteredMR, "state")
-
-
-
-mapUSA <- map('state',  fill = TRUE,  plot = FALSE)
-nms <- sapply(strsplit(mapUSA$names,  ':'),  function(x)x[1])
-USApolygons <- map2SpatialPolygons(mapUSA,  IDs = nms,  CRS('+proj=longlat'))
-idx <- match(unique(nms),  state_HC$state)
-dat2 <- data.frame(value = state_HC$freq[idx], state = unique(nms))
-row.names(dat2) <- unique(nms)
-USAsp <- SpatialPolygonsDataFrame(USApolygons,  data = dat2)
-spplot(USAsp['value'], col.regions= rainbow(100, start = 3/6, end = 4/6 ))
-View(state_HC)
-
-mapUSA <- map('state',  fill = TRUE,  plot = FALSE)
-nms <- sapply(strsplit(mapUSA$names,  ':'),  function(x)x[1])
-USApolygons <- map2SpatialPolygons(mapUSA,  IDs = nms,  CRS('+proj=longlat'))
-idx <- match(unique(nms),  state_BS$state)
-dat2 <- data.frame(value = state_BS$freq[idx], state = unique(nms))
-row.names(dat2) <- unique(nms)
-USAsp <- SpatialPolygonsDataFrame(USApolygons,  data = dat2)
-spplot(USAsp['value'], col.regions= rainbow(100, start = 3/6, end = 4/6 ))
-View(state_BS)
-
-
-mapUSA <- map('state',  fill = TRUE,  plot = FALSE)
-nms <- sapply(strsplit(mapUSA$names,  ':'),  function(x)x[1])
-USApolygons <- map2SpatialPolygons(mapUSA,  IDs = nms,  CRS('+proj=longlat'))
-idx <- match(unique(nms),  state_TC$state)
-dat2 <- data.frame(value = state_TC$freq[idx], state = unique(nms))
-row.names(dat2) <- unique(nms)
-USAsp <- SpatialPolygonsDataFrame(USApolygons,  data = dat2)
-spplot(USAsp['value'], col.regions= rainbow(100, start = 3/6, end = 4/6 ))
-View(state_TC)
-
-
-mapUSA <- map('state',  fill = TRUE,  plot = FALSE)
-nms <- sapply(strsplit(mapUSA$names,  ':'),  function(x)x[1])
-USApolygons <- map2SpatialPolygons(mapUSA,  IDs = nms,  CRS('+proj=longlat'))
-idx <- match(unique(nms),  state_DT$state)
-dat2 <- data.frame(value = state_DT$freq[idx], state = unique(nms))
-row.names(dat2) <- unique(nms)
-USAsp <- SpatialPolygonsDataFrame(USApolygons,  data = dat2)
-# rev(rainbow.....)
-spplot(USAsp['value'], col.regions= rainbow(100, start = 3/6, end = 4/6 ))
-View(state_DT)
-
-
-mapUSA <- map('state',  fill = TRUE,  plot = FALSE)
-nms <- sapply(strsplit(mapUSA$names,  ':'),  function(x)x[1])
-USApolygons <- map2SpatialPolygons(mapUSA,  IDs = nms,  CRS('+proj=longlat'))
-idx <- match(unique(nms),  state_MR$state)
-dat2 <- data.frame(value = state_MR$freq[idx], state = unique(nms))
-row.names(dat2) <- unique(nms)
-USAsp <- SpatialPolygonsDataFrame(USApolygons,  data = dat2)
-# rev(rainbow.....)
-spplot(USAsp['value'], col.regions= rainbow(100, start = 3/6, end = 4/6 ))
-View(state_MR)
 
 useful_info <- c("text", "id_str", "created_at", "screen_name", "place_lat", "place_lon",  "lat", "lon", "country_code")
 HC_us <- HC[HC$country_code=='US',] 
@@ -506,122 +381,6 @@ HC_pt <-  HC_us[geo_pts]
 ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = HC_pt, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
 
 
-
-
-# The single argument to this function, pointsDF, is a data.frame in which:
-#   - column 1 contains the longitude in degrees (negative in the US)
-#   - column 2 contains the latitude in degrees
-
-latlong2state <- function(pointsDF) {
-  # Prepare SpatialPolygons object with one SpatialPolygon
-  # per state (plus DC, minus HI & AK)
-  states <- map('state', fill=TRUE, col="transparent", plot=FALSE)
-  IDs <- sapply(strsplit(states$names, ":"), function(x) x[1])
-  states_sp <- map2SpatialPolygons(states, IDs=IDs,
-                                   proj4string=CRS("+proj=longlat +datum=WGS84"))
-  # Convert pointsDF to a SpatialPoints object 
-  pointsSP <- SpatialPoints(pointsDF, 
-                            proj4string=CRS("+proj=longlat +datum=WGS84"))
-  
-  # Use 'over' to get _indices_ of the Polygons object containing each point 
-  indices <- over(pointsSP, states_sp)
-  
-  # Return the state names of the Polygons object containing each point
-  stateNames <- sapply(states_sp@polygons, function(x) x@ID)
-  stateNames[indices]
-}
-
-# Test the function using points in Wisconsin and Oregon.
-#testPoints <- data.frame(x = c(-90, -120), y = c(44, 44))
-#latlong2state(testPoints)
-
-latlong2state(HC_pt)
-
-
-HC_pt$state <- latlong2state(HC_pt)
-filteredHC <- HC_pt[!(is.na(HC_pt$state)),]
-
-
-count(filteredHC, "state")
-state_HC <- count(filteredHC, "state")
-View(state_HC)
-write.csv(state_HC, file = "state_HC.csv",row.names=FALSE)
-
-
-colwise(class)(state_HC)
-
-# maps per candidate by population
-population <-read.csv("VotingPopulation.csv", header = TRUE, sep = ",", quote = "\"")
-
-HC_pop <- merge(population,state_HC)
-HC_pop$freq <- HC_pop$freq/HC_pop$pop
-View(HC_pop)
-
-BS_pop <- merge(population,state_BS)
-BS_pop$freq <- BS_pop$freq/BS_pop$pop
-View(BS_pop)
-
-TC_pop <- merge(population,state_TC)
-TC_pop$freq <- TC_pop$freq/TC_pop$pop
-View(TC_pop)
-
-MR_pop <- merge(population,state_MR)
-MR_pop$freq <- MR_pop$freq/MR_pop$pop
-View(MR_pop)
-
-DT_pop <- merge(population,state_DT)
-DT_pop$freq <- DT_pop$freq/DT_pop$pop
-View(DT_pop)
-
-# map time
-mapUSA <- map('state',  fill = TRUE,  plot = FALSE)
-nms <- sapply(strsplit(mapUSA$names,  ':'),  function(x)x[1])
-USApolygons <- map2SpatialPolygons(mapUSA,  IDs = nms,  CRS('+proj=longlat'))
-idx <- match(unique(nms),  HC_pop$state)
-dat2 <- data.frame(value = HC_pop$freq[idx], state = unique(nms))
-row.names(dat2) <- unique(nms)
-USAsp <- SpatialPolygonsDataFrame(USApolygons,  data = dat2)
-spplot(USAsp['value'], col.regions = rainbow(100, start = 3/6, end = 4/6 ))        
-
-
-mapUSA <- map('state',  fill = TRUE,  plot = FALSE)
-nms <- sapply(strsplit(mapUSA$names,  ':'),  function(x)x[1])
-USApolygons <- map2SpatialPolygons(mapUSA,  IDs = nms,  CRS('+proj=longlat'))
-idx <- match(unique(nms),  BS_pop$state)
-dat2 <- data.frame(value = BS_pop$freq[idx], state = unique(nms))
-row.names(dat2) <- unique(nms)
-USAsp <- SpatialPolygonsDataFrame(USApolygons,  data = dat2)
-spplot(USAsp['value'], col.regions = rainbow(100, start = 3/6, end = 4/6 ))        
-
-
-mapUSA <- map('state',  fill = TRUE,  plot = FALSE)
-nms <- sapply(strsplit(mapUSA$names,  ':'),  function(x)x[1])
-USApolygons <- map2SpatialPolygons(mapUSA,  IDs = nms,  CRS('+proj=longlat'))
-idx <- match(unique(nms),  TC_pop$state)
-dat2 <- data.frame(value = TC_pop$freq[idx], state = unique(nms))
-row.names(dat2) <- unique(nms)
-USAsp <- SpatialPolygonsDataFrame(USApolygons,  data = dat2)
-spplot(USAsp['value'], col.regions = rainbow(100, start = 3/6, end = 4/6 ))        
-
-
-mapUSA <- map('state',  fill = TRUE,  plot = FALSE)
-nms <- sapply(strsplit(mapUSA$names,  ':'),  function(x)x[1])
-USApolygons <- map2SpatialPolygons(mapUSA,  IDs = nms,  CRS('+proj=longlat'))
-idx <- match(unique(nms),  MR_pop$state)
-dat2 <- data.frame(value = MR_pop$freq[idx], state = unique(nms))
-row.names(dat2) <- unique(nms)
-USAsp <- SpatialPolygonsDataFrame(USApolygons,  data = dat2)
-spplot(USAsp['value'], col.regions = rainbow(100, start = 3/6, end = 4/6 ))        
-
-
-mapUSA <- map('state',  fill = TRUE,  plot = FALSE)
-nms <- sapply(strsplit(mapUSA$names,  ':'),  function(x)x[1])
-USApolygons <- map2SpatialPolygons(mapUSA,  IDs = nms,  CRS('+proj=longlat'))
-idx <- match(unique(nms),  DT_pop$state)
-dat2 <- data.frame(value = DT_pop$freq[idx], state = unique(nms))
-row.names(dat2) <- unique(nms)
-USAsp <- SpatialPolygonsDataFrame(USApolygons,  data = dat2)
-spplot(USAsp['value'], col.regions = rainbow(100, start = 3/6, end = 4/6 ))        
 
 
 ######################
@@ -873,7 +632,6 @@ rep_df = read.csv("R_topics.csv")
 
 
 dem_compared = read.csv("dem_compare.csv") 
-
 ggplot(data=dem_compared, aes(x=term, y=rate, fill=name)) +
   geom_bar(stat="identity", position=position_dodge())  +
   scale_fill_brewer() +
@@ -882,7 +640,6 @@ ggplot(data=dem_compared, aes(x=term, y=rate, fill=name)) +
 
 
 rep_compared = read.csv("rep_compare.csv") 
-
 ggplot(data=rep_compared, aes(x=term, y=rate, fill=name)) +
   geom_bar(stat="identity", position=position_dodge())  +
   scale_fill_manual(values=c("#FF9999", "#FF6666")) +
@@ -890,7 +647,6 @@ ggplot(data=rep_compared, aes(x=term, y=rate, fill=name)) +
 
 
 party_compared = read.csv("party_compare.csv") 
-
 ggplot(data=party_compared, aes(x=term, y=rate, fill=party)) +
   geom_bar(stat="identity", position=position_dodge())  +
   scale_fill_manual(values=c("#6699FF", "#FF6666")) +
