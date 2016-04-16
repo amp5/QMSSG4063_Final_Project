@@ -9,13 +9,13 @@ install.packages("wordcloud")
 install.packages("NLP")
 install.packages("tm")
 install.packages("ggplot2")
+install.packages("sp")
 install.packages("maps")
 install.packages("maptools")
 install.packages("rworldmap")
 
 ### stopped installing here
 install.packages("grid")
-install.packages("sp")
 install.packages("plyr")
 install.packages("Rstem")
 install.packages("stringr")
@@ -35,6 +35,7 @@ library(NLP)
 library(tm)
 
 library(ggplot2)
+library(sp)
 library(maps)
 library(maptools)
 library(rworldmap)
@@ -42,9 +43,6 @@ library(rworldmap)
 
 # stopped loading libraries here. 
 library(grid)
-
-library(sp)
-
 library(plyr)
 
 library(Rstem)
@@ -208,10 +206,14 @@ tc <- tweet_corp(BS)
 ##### Building Map #######
 ###########################################
 
+##### UNABLE TO GET THIS FUNCTION WORKING..........................................................................................................
+
 map.data <- map_data("state")
 
 map_tweets <- function(filename){
-  points <- data.frame(x = as.numeric(filename$lon), y = as.numeric(filename$lat))
+  only_coords <- filename[complete.cases(filename) ,]
+  us_coords <- only_coords[only_coords$country_code == 'US',]
+  points <- data.frame(x = as.numeric(us_coords$place_lon), y = as.numeric(us_coords$place_lat))
   points <- points[points$y > 25, ]
   ggplot(map.data) + geom_map(aes(map_id = region), map = map.data, fill = "#fdf9f9", 
                               color = "#9d9595", size = 0.25) + expand_limits(x = map.data$long, y = map.data$lat) + 
@@ -225,7 +227,7 @@ map_tweets <- function(filename){
 map_tweets(HC)
 
 
-points <- data.frame(x = as.numeric(tweets.df$lon), y = as.numeric(tweets.df$lat))
+points <- data.frame(x = as.numeric(HC$place_lon), y = as.numeric(HC$place_lat))
 points <- points[points$y > 25, ]
 ## How can I get this to separate between Hillary and Sanders
 ggplot(map.data) + geom_map(aes(map_id = region), map = map.data, fill = "#fdf9f9", 
