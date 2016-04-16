@@ -15,16 +15,11 @@ install.packages("maptools")
 install.packages("rworldmap")
 
 ### stopped installing here
-install.packages("grid")
-install.packages("plyr")
 install.packages("Rstem")
-install.packages("stringr")
 
 
-
-
-library(RCurl)
 library(bitops)
+library(RCurl)
 library(rjson)
 library(streamR)
 
@@ -40,13 +35,13 @@ library(maps)
 library(maptools)
 library(rworldmap)
 
-
-# stopped loading libraries here. 
 library(grid)
+library(stringr)
 library(plyr)
 
+
+# stopped loading libraries here. 
 library(Rstem)
-library(stringr)
 gpclibPermit()
 
 ####################################################
@@ -77,6 +72,12 @@ BS <- BS_all[useful_info]
 TC <- TC_all[useful_info]
 DT <- DT_all[useful_info]
 MR <- MR_all[useful_info]
+
+# also by party
+dem <- rbind(HC, BS)
+rep <- rbind(TC, DT)
+
+# all
 all_filtered <- tweets_all[useful_info]
 
 save (HC, file= 'HC.Rdata')
@@ -84,7 +85,14 @@ save (BS, file= 'BS.Rdata')
 save (TC, file= 'TC.Rdata')
 save (DT, file= 'DT.Rdata')
 save (MR, file= 'MR.Rdata')
+save(dem, file='dem.Rdata')
+save(rep, file='rep.Rdata')
 save (all_filtered, file= 'all_filtered.Rdata')
+
+##### starting here.....after force quit
+setwd("/Users/amp2261/Desktop")
+load("HC.Rdata")
+load("BS.Rdata")
 
 
 ###########################################
@@ -207,6 +215,7 @@ tc <- tweet_corp(BS)
 ###########################################
 
 ##### UNABLE TO GET THIS FUNCTION WORKING..........................................................................................................
+#### problem installing grid package.....
 
 map.data <- map_data("state")
 
@@ -250,74 +259,44 @@ ggplot(map.data) + geom_map(aes(map_id = region), map = map.data, fill = "#fdf9f
 ####### More Mapping #########
 ###########################################
 
-
-data <- geo_tagged_tweets
-
-filteredData <- data[!(is.na(data$lat)) | !(is.na(data$place_lat)),]
-save (filteredData, file= 'geo_filtered_data.Rdata')
-
-
-
-
-
-
+## TODO: GET THIS SECTION OF THE CODE (OR YOUR CODE FROM HW 3 WORKING IN GENERAL) TO WORK! THEN MAKE IT INTO A FUNCTION. 
 
 
 world <- map_data("world")
 US_states <- map_data("state")
 ggplot()+ geom_polygon( data=world, aes(x=long, y=lat, group = group),colour="white", fill="grey10" )
 
+##### Problem with ggplot and mapping
+#### getting a formatting error....
+
 map_gen_w <-function(filename){
-  ggplot(world) + geom_map(aes(map_id = region), map = world, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = world$long, y = world$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = filename, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
+  filtered_file <- filename[complete.cases(filename) ,]
+  ggplot(world) + geom_map(aes(map_id = region), map = world, fill = "grey90", color = "grey50", size = 0.25) + 
+    expand_limits(x = as.numeric(world$long), y = as.numeric(world$lat)) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + 
+    theme_minimal() + geom_point(data = filtered_file, aes(x = as.numeric(lon), y = as.numeric(lat)), size = 1, alpha = 1/5, color = "blue")
 }
 
-map_gen_w(HC)
-
-map_gen_s <-function(){}
-
-
-#Clinton
-ggplot(world) + geom_map(aes(map_id = region), map = world, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = world$long, y = world$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = HC, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = HC, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
-#Sanders
-ggplot(world) + geom_map(aes(map_id = region), map = world, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = world$long, y = world$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = BS, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = BS, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
-#Cruz
-ggplot(world) + geom_map(aes(map_id = region), map = world, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = world$long, y = world$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = TC, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "red")
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = TC, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "red")
-#Rubio
-ggplot(world) + geom_map(aes(map_id = region), map = world, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = world$long, y = world$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = MR, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "red")
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = MR, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "red")
-#Trump
-ggplot(world) + geom_map(aes(map_id = region), map = world, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = world$long, y = world$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = DT, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "red")
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = DT, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "red")
-
-#class(HC)
+map_gen_s <-function(filename){
+  filtered_file <- filename[complete.cases(filename) ,]
+  ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + 
+    expand_limits(x = as.numeric(US_states$long), y = as.numeric(US_states$lat)) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + 
+    theme_minimal() + geom_point(data = filtered_file, aes(x = as.numeric(place_lon), y = as.numeric(place_lat)), size = 1, alpha = 1/5, color = "blue")
+  
+}
 
 
-#install.packages("rworldmap") 
+### calling functions
 
+map_gen_w(BS)
+map_gen_s(HC)
 
-
-
-useful_info <- c("text", "id_str", "created_at", "screen_name", "place_lat", "place_lon",  "lat", "lon", "country_code")
-HC_us <- HC[HC$country_code=='US',] 
-BS_us <- BS[BS$country_code=='US',]
-TC_us <- TC[TC$country_code=='US',]
-DT_us <- DT[DT$country_code=='US',]
-MR_us <- MR[MR$country_code=='US',]
-
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = HC_us, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = BS_us, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = TC_us, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "red")
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = MR_us, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "red")
-ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = DT_us, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "red")
 
 #############################
 # Part 2 - Counting by State
 #############################
 
 
+#### functions
 
 # The single argument to this function, pointsDF, is a data.frame in which:
 #   - column 1 contains the longitude in degrees (negative in the US)
@@ -340,10 +319,37 @@ latlong2state <- function(pointsDF) {
   stateNames[indices]
 }
 
+as.numeric.factor <- function(x) {as.numeric(levels(x))[x]}
+
+
+state_mp_cnt <- function(filename){
+  geo_pts <- c("place_lon", "place_lat")
+  df_pt <-  filename[geo_pts]
+  
+  df_pt$place_lon <- as.numeric.factor(df_pt$place_lon)
+  df_pt$state <- latlong2state(df_pt)
+  filtered_df <- df_pt[!(is.na(df_pt$state)),]
+  count(filtered_df, "state")
+  state_df <- count(filtered_df, "state")
+  
+}
+
+
+
+
+
+### calling functions
+
 
 geo_pts <- c("place_lon", "place_lat")
-HC_pt <-  HC_us[geo_pts]
-BS_pt <- BS_us[geo_pts]
+HC_pt <-  HCT[geo_pts]
+BS_pt <- BS[geo_pts]
+
+
+HC_pt$place_lon <- as.numeric.factor(HC_pt$place_lon)
+
+
+
 TC_pt <- TC_us[geo_pts]
 DT_pt <- DT_us[geo_pts]
 MR_pt <- MR_us[geo_pts]
@@ -352,11 +358,58 @@ all_pt <- rbind(HC_pt, BS_pt, TC_pt, DT_pt, MR_pt)
 
 #ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = HC_pt, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
 
-
+# problem here.......... with data 
+View(HC_pt)
 HC_pt$state <- latlong2state(HC_pt)
 filteredHC <- HC_pt[!(is.na(HC_pt$state)),]
 count(filteredHC, "state")
 state_HC <- count(filteredHC, "state")
+
+
+
+mapUSA <- map('state',  fill = TRUE,  plot = FALSE)
+nms <- sapply(strsplit(mapUSA$names,  ':'),  function(x)x[1])
+USApolygons <- map2SpatialPolygons(mapUSA,  IDs = nms,  CRS('+proj=longlat'))
+idx <- match(unique(nms),  state_HC$state)
+dat2 <- data.frame(value = state_HC$freq[idx], state = unique(nms))
+row.names(dat2) <- unique(nms)
+USAsp <- SpatialPolygonsDataFrame(USApolygons,  data = dat2)
+spplot(USAsp['value'], col.regions= rainbow(100, start = 3/6, end = 4/6 ))
+View(state_HC)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+useful_info <- c("text", "id_str", "created_at", "screen_name", "place_lat", "place_lon",  "lat", "lon", "country_code")
+HC_us <- HCT[HCT$country_code=='US',] 
+
+ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + 
+  expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + 
+  theme_minimal() + geom_point(data = HC_us, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
+
+
+ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + 
+  expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + 
+  theme_minimal() + geom_point(data = HC_us, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
+
+
+
+
+
 
 BS_pt$state <- latlong2state(BS_pt)
 filteredBS <- BS_pt[!(is.na(BS_pt$state)),]
@@ -497,33 +550,6 @@ write.csv(state_HC, file = "state_HC.csv",row.names=FALSE)
 
 colwise(class)(state_HC)
 
-#library(rgeos)
-#library(maptools)
-#library(gpclib)  # may be needed, may not be
-
-# MAP
-#us_state <- readShapeSpatial("/Users/alexandraplassaras/Desktop/Columbia_Courses/Spring_2016/QMSS_G4063/QMSS_G4063_Data_Visualization/assignment3/cb_2013_us_state_500k (1)/cb_2013_us_state_500k.shp")
-# VERIFY IT LOADED PROPERLY
-#plot(us_state)
-
-
-
-#library(ggplot2)
-#np_dist <- fortify(np_dist, region = "NAME_3")
-#np_dist$id <- toupper(np_dist$id)  #change ids to uppercase
-#ggplot() + geom_map(data = edu63, aes(map_id = District, fill = PASS.PERCENT), 
-#                    map = np_dist) + expand_limits(x = np_dist$long, y = np_dist$lat)
-
-#library(maps)
-#library(maptools)
-#library(ggplot2)
-#library(ggmap)
-#map.text("state", regions=c(state_HC$state), labels=as.character(state_HC$freq))
-
-
-
-
-
 # maps per candidate by population
 population <-read.csv("VotingPopulation.csv", header = TRUE, sep = ",", quote = "\"")
 
@@ -598,13 +624,6 @@ USAsp <- SpatialPolygonsDataFrame(USApolygons,  data = dat2)
 spplot(USAsp['value'], col.regions = rainbow(100, start = 3/6, end = 4/6 ))        
 
 
-
-
-
-
-
-
-
 ######################
 #Extra Credit Section
 ######################
@@ -646,96 +665,16 @@ US_pt <- count(all_pt,"fips")
 write.table(US_pt1, file='UStweets.tsv', quote=FALSE, sep='\t')
 
 
+
+
+
+
+
+
 ##############################################
 ########## Sentiment Analysis ################
 ##############################################
 
-
-
-
-
-setwd("/Users/alexandraplassaras/Desktop/Columbia_Courses/Spring_2016/QMSS_G4063/QMSS_G4063_Data_Visualization/assignment4")
-load("ParsedTweets.Rdata")
-
-tweets_all <- rbind(t02092016_df, 
-                    t02202016_df, 
-                    t02232016_df, 
-                    t02272016_df, 
-                    t03012016_df, 
-                    t03052016_df, 
-                    t03062016_df, 
-                    t03082016_df, 
-                    t03152016_df, 
-                    t03212016_df)
-
-tweets_all$text <- sapply(tweets_all$text,function(row) iconv(row, "latin1", "ASCII", sub=""))
-#twts <- tweets_all$text
-#class(twts)
-#View(twts)
-
-
-#Clinton, Cruz, Rubio, Sanders, Trump
-HC_all <- subset (tweets_all, grepl(pattern =  "Clinton | 
-                                    clinton | Hillary | 
-                                    hillary | Hillaryclinton | 
-                                    hillaryclinton | Hillary Clinton | 
-                                    hillary clinton" , 
-                                    tweets_all$text, ignore.case = TRUE))
-
-BS_all <- subset (tweets_all, grepl(pattern =  "Berniesanders | berniesanders | 
-                                    Bernie Sanders  | bernie sanders | Bernie | 
-                                    bernie | Sensanders | sensanders" , 
-                                    tweets_all$text, ignore.case = TRUE))
-
-TC_all <-  subset (tweets_all, grepl(pattern =  "Cruz | cruz | Ted | ted | 
-                                     Tedcruz | tedcruz | Ted Cruz | ted cruz" , 
-                                     tweets_all$text, ignore.case = TRUE))
-
-DT_all <- subset (tweets_all, grepl(pattern =  "Donaldtrump  | donaldtrump | 
-                                    Donald Trump | donald trump | Trump | trump | 
-                                    Donald | donald | Trumpf | trumpf" , 
-                                    tweets_all$text, ignore.case = TRUE))
-
-
-
-dem_all <- rbind(HC_all, BS_all)
-rep_all <- rbind(TC_all, DT_all)
-
-#View(dem_all)
-
-useful_info <- c("text", "created_at", "screen_name")
-## First section - separate by political party
-all_twts <- tweets_all[useful_info]
-
-dem <-  dem_all[useful_info]
-rep <- rep_all[useful_info]
-
-# Second section - separate by political candidate
-HC <- HC_all[useful_info]
-BS <- BS_all[useful_info]
-TC <- TC_all[useful_info]
-DT <- DT_all[useful_info]
-
-
-
-save (HC, file= 'HC.Rdata')
-save (BS, file= 'BS.Rdata')
-save (TC, file= 'TC.Rdata')
-save (DT, file= 'DT.Rdata')
-save (dem, file= 'dem.Rdata')
-save (rep, file= 'rep.Rdata')
-save (all_twts, file= 'alltwts.Rdata')
-
-
-########### After R crahses, start here:
-# processing all these very large files. Will not use in future will just load old folders
-load("alltwts.Rdata")
-load("HC.Rdata")
-load("BS.Rdata")
-load("TC.Rdata")
-load("DT.Rdata")
-load("dem.Rdata")
-load("rep.Rdata")
 
 
 lexicon <- read.csv("lexicon_ps.csv", stringsAsFactors=F)
@@ -751,83 +690,19 @@ climate.words <- lexicon$word[lexicon$polarity=="climate_change"]
 religion.words <- lexicon$word[lexicon$polarity=="religion"]
 
 
-### All Tweet Corpus
-TweetCorpus <- paste(unlist(tweets_all$text), collapse =" ") #to get all of the tweets together
-TweetCorpus <- Corpus(VectorSource(TweetCorpus))
-TweetCorpus <- tm_map(TweetCorpus, PlainTextDocument)
-TweetCorpus <- tm_map(TweetCorpus, removePunctuation)
-TweetCorpus <- tm_map(TweetCorpus, removeWords, stopwords('english'))
-TweetCorpus <- tm_map(TweetCorpus, content_transformer(tolower),lazy=TRUE)
-TweetCorpus <- tm_map(TweetCorpus, PlainTextDocument)
-wordcloud(TweetCorpus, max.words = 100, random.order = FALSE)
-
-### HC Tweet Corpus
-TweetCorpusHC <- paste(unlist(HC$text), collapse =" ") #to get all of the tweets together
-TweetCorpusHC <- Corpus(VectorSource(TweetCorpusHC))
-TweetCorpusHC <- tm_map(TweetCorpusHC, PlainTextDocument)
-TweetCorpusHC <- tm_map(TweetCorpusHC, removePunctuation)
-TweetCorpusHC <- tm_map(TweetCorpusHC, removeWords, stopwords('english'))
-TweetCorpusHC <- tm_map(TweetCorpusHC, content_transformer(tolower),lazy=TRUE)
-TweetCorpusHC <- tm_map(TweetCorpusHC, PlainTextDocument)
-wordcloud(TweetCorpusHC, max.words = 100, random.order = FALSE)
-
-### BS Tweet Corpus
-TweetCorpusBS <- paste(unlist(BS$text), collapse =" ") #to get all of the tweets together
-TweetCorpusBS <- Corpus(VectorSource(TweetCorpusBS))
-TweetCorpusBS <- tm_map(TweetCorpusBS, PlainTextDocument)
-TweetCorpusBS <- tm_map(TweetCorpusBS, removePunctuation)
-TweetCorpusBS <- tm_map(TweetCorpusBS, removeWords, stopwords('english'))
-TweetCorpusBS <- tm_map(TweetCorpusBS, content_transformer(tolower),lazy=TRUE)
-TweetCorpusBS <- tm_map(TweetCorpusBS, PlainTextDocument)
-wordcloud(TweetCorpusBS, max.words = 100, random.order = FALSE)
+# Getting all the candidates into TweetCorpuses
 
 
-### TC Tweet Corpus
-TweetCorpusTC <- paste(unlist(TC$text), collapse =" ") #to get all of the tweets together
-TweetCorpusTC <- Corpus(VectorSource(TweetCorpusTC))
-TweetCorpusTC <- tm_map(TweetCorpusTC, PlainTextDocument)
-TweetCorpusTC <- tm_map(TweetCorpusTC, removePunctuation)
-TweetCorpusTC <- tm_map(TweetCorpusTC, removeWords, stopwords('english'))
-TweetCorpusTC <- tm_map(TweetCorpusTC, content_transformer(tolower),lazy=TRUE)
-TweetCorpusTC <- tm_map(TweetCorpusTC, PlainTextDocument)
-wordcloud(TweetCorpusTC, max.words = 100, random.order = FALSE)
-
-
-### DT Tweet Corpus
-TweetCorpusDT <- paste(unlist(DT$text), collapse =" ") #to get all of the tweets together
-TweetCorpusDT <- Corpus(VectorSource(TweetCorpusDT))
-TweetCorpusDT <- tm_map(TweetCorpusDT, PlainTextDocument)
-TweetCorpusDT <- tm_map(TweetCorpusDT, removePunctuation)
-TweetCorpusDT <- tm_map(TweetCorpusDT, removeWords, stopwords('english'))
-TweetCorpusDT <- tm_map(TweetCorpusDT, content_transformer(tolower),lazy=TRUE)
-TweetCorpusDT <- tm_map(TweetCorpusDT, PlainTextDocument)
-wordcloud(TweetCorpusDT, max.words = 100, random.order = FALSE)
-
-
-### DEM Tweet Corpus
-TweetCorpusD <- paste(unlist(dem$text), collapse =" ") #to get all of the tweets together
-TweetCorpusD <- Corpus(VectorSource(TweetCorpusD))
-TweetCorpusD <- tm_map(TweetCorpusD, PlainTextDocument)
-TweetCorpusD <- tm_map(TweetCorpusD, removePunctuation)
-TweetCorpusD <- tm_map(TweetCorpusD, removeWords, stopwords('english'))
-TweetCorpusD <- tm_map(TweetCorpusD, content_transformer(tolower),lazy=TRUE)
-TweetCorpusD <- tm_map(TweetCorpusD, PlainTextDocument)
-wordcloud(TweetCorpusD, max.words = 100, random.order = FALSE)
+tc_HC <- tweet_corp(HC)
+tc_BS <- tweet_corp(BS)
+tc_TC <- tweet_corp(HTC)
+tc_DT <- tweet_corp(DT)
+tc_dem <- tweet_corp(dem)
+tc_rep <- tweet_corp(rep)
 
 
 
-### REP Tweet Corpus
-TweetCorpusR <- paste(unlist(rep$text), collapse =" ") #to get all of the tweets together
-TweetCorpusR <- Corpus(VectorSource(TweetCorpusR))
-TweetCorpusR <- tm_map(TweetCorpusR, PlainTextDocument)
-TweetCorpusR <- tm_map(TweetCorpusR, removePunctuation)
-TweetCorpusR <- tm_map(TweetCorpusR, removeWords, stopwords('english'))
-TweetCorpusR <- tm_map(TweetCorpusR, content_transformer(tolower),lazy=TRUE)
-TweetCorpusR <- tm_map(TweetCorpusR, PlainTextDocument)
-wordcloud(TweetCorpusR, max.words = 100, random.order = FALSE)
-
-
-
+#### fix this with code from Surabhi
 all_econ <- sum(str_count(TweetCorpus, econ.words))
 all_imm <- sum(str_count(TweetCorpus, imm.words))
 all_health <- sum(str_count(TweetCorpus, health.words))
@@ -838,8 +713,6 @@ all_trade <- sum(str_count(TweetCorpus, trade.words))
 all_race <- sum(str_count(TweetCorpus, race.words))
 all_climate <- sum(str_count(TweetCorpus, climate.words))
 all_religion <- sum(str_count(TweetCorpus, religion.words))
-
-
 
 HC_econ <- sum(str_count(TweetCorpusHC, econ.words))
 HC_imm <- sum(str_count(TweetCorpusHC, imm.words))
