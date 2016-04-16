@@ -9,12 +9,13 @@ install.packages("wordcloud")
 install.packages("NLP")
 install.packages("tm")
 install.packages("ggplot2")
-### stopped installing here
-install.packages("grid")
-install.packages("sp")
 install.packages("maps")
 install.packages("maptools")
 install.packages("rworldmap")
+
+### stopped installing here
+install.packages("grid")
+install.packages("sp")
 install.packages("plyr")
 install.packages("Rstem")
 install.packages("stringr")
@@ -34,16 +35,16 @@ library(NLP)
 library(tm)
 
 library(ggplot2)
-
+library(maps)
+library(maptools)
+library(rworldmap)
 
 
 # stopped loading libraries here. 
 library(grid)
 
 library(sp)
-library(maps)
-library(maptools)
-library(rworldmap)
+
 library(plyr)
 
 library(Rstem)
@@ -93,15 +94,7 @@ save (all_filtered, file= 'all_filtered.Rdata')
 ###########################################
 
 #making word cloud function
-
-wc <- function(file, filename){
-  head(file)
-  return(head(file))
-}
-
-wc(HC, "something")
-
-
+# adding in the name of the dataframe into this function will result in a worldcloud being generated
 wc <- function(filename){
   filename$text <- sapply(filename$text,function(row) iconv(row, "latin1", "ASCII", sub=""))
   TweetCorpus<-paste(unlist(filename$text), collapse =" ")
@@ -150,65 +143,88 @@ wc <- function(filename){
   return(wordcloud(TweetCorpus, min.freq = 900,  max.words = 500, random.order = FALSE, colors = brewer.pal(4, "Dark2")))
 }
 
+
+# creating a tweetcorpus, just insert the db filename into function, will receive TweetCorpus as a result
+# don't forget to set this to a var name
+#ex. bs_tc <- tweet_corp(BS)
+tweet_corp <- function(filename){
+  filename$text <- sapply(filename$text,function(row) iconv(row, "latin1", "ASCII", sub=""))
+  TweetCorpus<-paste(unlist(filename$text), collapse =" ")
+  TweetCorpus <- Corpus(VectorSource(TweetCorpus))
+  TweetCorpus <- tm_map(TweetCorpus, removePunctuation)
+  TweetCorpus <- tm_map(TweetCorpus, removeWords, stopwords("english"))
+  #TweetCorpus <- tm_map(TweetCorpus, stemDocument)
+  TweetCorpus <- tm_map(TweetCorpus, content_transformer(tolower),lazy=TRUE)
+  TweetCorpus <- tm_map(TweetCorpus, PlainTextDocument)
+  TweetCorpus <- tm_map(TweetCorpus, removeWords, c("https",
+                                                    "https...",
+                                                    "via",
+                                                    "use",
+                                                    "just",
+                                                    "think",
+                                                    "say",
+                                                    "that",
+                                                    "its",
+                                                    "like",
+                                                    "this",
+                                                    "will",
+                                                    "the",
+                                                    "lol", 
+                                                    "now", 
+                                                    "one", 
+                                                    "still", 
+                                                    "whi",
+                                                    "amp",
+                                                    "let",
+                                                    "ill",
+                                                    "come",
+                                                    "shit",
+                                                    "and",
+                                                    "realli",
+                                                    "your",
+                                                    "you",
+                                                    "fuck",
+                                                    "last",
+                                                    "for",
+                                                    "much",
+                                                    "see",
+                                                    "got",
+                                                    "can",
+                                                    "get"
+  ))
+  return(TweetCorpus)
+}
+
+
+######
+# calling all the functions here
+######
+
 wc(HC)
-
-
-tweets_US.df$text <- sapply(tweets_US.df$text,function(row) iconv(row, "latin1", "ASCII", sub=""))
-TweetCorpus<-paste(unlist(tweets_US.df$text), collapse =" ")
-TweetCorpus <- Corpus(VectorSource(TweetCorpus))
-TweetCorpus <- tm_map(TweetCorpus, removePunctuation)
-TweetCorpus <- tm_map(TweetCorpus, removeWords, stopwords("english"))
-#TweetCorpus <- tm_map(TweetCorpus, stemDocument)
-TweetCorpus <- tm_map(TweetCorpus, content_transformer(tolower),lazy=TRUE)
-TweetCorpus <- tm_map(TweetCorpus, PlainTextDocument)
-TweetCorpus <- tm_map(TweetCorpus, removeWords, c("https",
-                                                  "https...",
-                                                  "via",
-                                                  "use",
-                                                  "just",
-                                                  "think",
-                                                  "say",
-                                                  "that",
-                                                  "its",
-                                                  "like",
-                                                  "this",
-                                                  "will",
-                                                  "the",
-                                                  "lol", 
-                                                  "now", 
-                                                  "one", 
-                                                  "still", 
-                                                  "whi",
-                                                  "amp",
-                                                  "let",
-                                                  "ill",
-                                                  "come",
-                                                  "shit",
-                                                  "and",
-                                                  "realli",
-                                                  "your",
-                                                  "you",
-                                                  "fuck",
-                                                  "last",
-                                                  "for",
-                                                  "much",
-                                                  "see",
-                                                  "got",
-                                                  "can",
-                                                  "get"
-))
-
-
-wordcloud(TweetCorpus, min.freq = 900,  max.words = 500, random.order = FALSE, colors = brewer.pal(4, "Dark2"))
+tc <- tweet_corp(BS)
+# wordcloud(tc, min.freq = 900,  max.words = 500, random.order = FALSE, colors = brewer.pal(4, "Dark2"))
 
 ###########################################
 ##### Building Map #######
 ###########################################
 
-tweets.df <- parseTweets("tweetsUS_H_B.json", verbose = FALSE)
-
-
 map.data <- map_data("state")
+
+map_tweets <- function(filename){
+  points <- data.frame(x = as.numeric(filename$lon), y = as.numeric(filename$lat))
+  points <- points[points$y > 25, ]
+  ggplot(map.data) + geom_map(aes(map_id = region), map = map.data, fill = "#fdf9f9", 
+                              color = "#9d9595", size = 0.25) + expand_limits(x = map.data$long, y = map.data$lat) + 
+    theme(axis.line = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), 
+          axis.title = element_blank(), panel.background = element_blank(), panel.border = element_blank(), 
+          panel.grid.major = element_blank(), plot.background = element_blank(), 
+          plot.margin = unit(0 * c(-1.5, -1.5, -1.5, -1.5), "lines")) + geom_point(data = points, 
+                                                                                   aes(x = x, y = y), size = 1, alpha = 1/5, color = "#CC6666") 
+}
+
+map_tweets(HC)
+
+
 points <- data.frame(x = as.numeric(tweets.df$lon), y = as.numeric(tweets.df$lat))
 points <- points[points$y > 25, ]
 ## How can I get this to separate between Hillary and Sanders
@@ -225,7 +241,7 @@ ggplot(map.data) + geom_map(aes(map_id = region), map = map.data, fill = "#fdf9f
 ###########################################
 
 
-
+### This one is tbd.......
 
 
 ###########################################
@@ -237,8 +253,7 @@ data <- geo_tagged_tweets
 
 filteredData <- data[!(is.na(data$lat)) | !(is.na(data$place_lat)),]
 save (filteredData, file= 'geo_filtered_data.Rdata')
-View(filteredData)
-class(filteredData) # dataframe
+
 
 
 
@@ -249,6 +264,16 @@ class(filteredData) # dataframe
 world <- map_data("world")
 US_states <- map_data("state")
 ggplot()+ geom_polygon( data=world, aes(x=long, y=lat, group = group),colour="white", fill="grey10" )
+
+map_gen_w <-function(filename){
+  ggplot(world) + geom_map(aes(map_id = region), map = world, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = world$long, y = world$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = filename, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
+}
+
+map_gen_w(HC)
+
+map_gen_s <-function(){}
+
+
 #Clinton
 ggplot(world) + geom_map(aes(map_id = region), map = world, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = world$long, y = world$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = HC, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
 ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + expand_limits(x = US_states$long, y = US_states$lat) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + geom_point(data = HC, aes(x = place_lon, y = place_lat), size = 1, alpha = 1/5, color = "blue")
