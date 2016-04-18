@@ -1,3 +1,10 @@
+# personal comp wd
+setwd("/Users/alexandraplassaras/Desktop/Columbia_Courses/Spring_2016/QMSS_G4063/QMSS_G4063_Data_Visualization/Final")
+
+# school comp wd
+setwd("/Users/amp2261/Desktop/Final_Project")
+
+
 ########################################
 #### Libraries Needed #######
 ########################################
@@ -49,36 +56,82 @@ gpclibPermit()
 ####################################################
 load("/Users/amp2261/Desktop/wetransfer-684680/tweets.21_25.Rda")
 
-tweets_all <- rbind(tweets.03.21.2016, 
+
+load("tweets.27-29Feb.Rda")
+load("tweets.22-26Feb.Rda")
+load("tweets.01-05April.RData")
+load("tweets.21-25March.Rda")
+load("tweets.16-20March.Rda")
+load("tweets.15-21Feb.Rda")
+load("tweets.12-14Feb.Rda")
+load("tweets.11-15March.RData")
+load("tweets.07-11Feb.Rda")
+load("tweets.06-15April.RData")
+load("tweets.06-10March.Rda")
+load("tweets.01-05March.Rda")
+
+
+tweets_all <- rbind(tweets.02.12.2016, 
+                    tweets.02.13.2016, 
+                    tweets.02.14.2016, 
+                    tweets.02.15.2016, 
+                    tweets.02.18.2016, 
+                    tweets.02.19.2016, 
+                    tweets.02.20.2016, 
+                    tweets.02.21.2016,
+                    tweets.02.22.2016, 
+                    tweets.02.23.2016, 
+                    tweets.02.24.2016, 
+                    tweets.02.25.2016,
+                    tweets.02.26.2016, 
+                    tweets.02.27.2016, 
+                    tweets.02.28.2016, 
+                    tweets.02.29.2016, 
+                    tweets.03.11.2016,
+                    tweets.03.12.2016,
+                    tweets.03.13.2016,
+                    tweets.03.14.2016,
+                    tweets.03.15.2016,
+                    tweets.03.16.2016,
+                    tweets.03.17.2016,
+                    tweets.03.18.2016,
+                    tweets.03.19.2016,
+                    tweets.03.20.2016,
+                    tweets.03.21.2016, 
                     tweets.03.22.2016, 
                     tweets.03.23.2016, 
                     tweets.03.24.2016, 
-                    tweets.03.25.2016)
+                    tweets.03.25.2016, 
+                
+                    tweets.04.01.2016,
+                    tweets.04.02.2016,
+                    tweets.04.03.2016,
+                    tweets.04.04.2016,
+                    tweets.04.05.2016,
+                    
+                    
+                    )
 
-HC_all <- subset (tweets_all, grepl(pattern =  "Clinton | clinton | Hillary | hillary | Hillaryclinton | hillaryclinton | Hillary Clinton | hillary clinton" , 
-                                    tweets_all$text, ignore.case = TRUE))
-BS_all <- subset (tweets_all, grepl(pattern =  "Berniesanders | berniesanders | Bernie Sanders  | bernie sanders | Bernie | bernie | Sensanders | sensanders" , 
-                                    tweets_all$text, ignore.case = TRUE))
-TC_all <-  subset (tweets_all, grepl(pattern =  "Cruz | cruz | Ted | ted | Tedcruz | tedcruz | Ted Cruz | ted cruz" , 
-                                     tweets_all$text, ignore.case = TRUE))
-DT_all <- subset (tweets_all, grepl(pattern =  "Donaldtrump  | donaldtrump | Donald Trump | donald trump | Trump | trump | Donald | donald | Trumpf | trumpf" , 
-                                    tweets_all$text, ignore.case = TRUE))
-MR_all <- subset (tweets_all, grepl(pattern =  "Marcorubio | marcorubio | Marco Rubio | marco rubio" , 
-                                    tweets_all$text, ignore.case = TRUE))
 
 useful_info <- c("text", "id_str", "created_at", "screen_name", "place_lat", "place_lon",  "lat", "lon", "country_code", "retweeted", "retweet_count")
-HC <-  HC_all[useful_info]
-BS <- BS_all[useful_info]
-TC <- TC_all[useful_info]
-DT <- DT_all[useful_info]
-MR <- MR_all[useful_info]
+all_filtered <- tweets_all[useful_info]
+
+
+HC <- subset (all_filtered, grepl(pattern =  "Clinton | clinton | Hillary | hillary | Hillaryclinton | hillaryclinton | Hillary Clinton | hillary clinton" , 
+                                all_filtered$text, ignore.case = TRUE))
+BS <- subset (all_filtered, grepl(pattern =  "Berniesanders | berniesanders | Bernie Sanders  | bernie sanders | Bernie | bernie | Sensanders | sensanders" , 
+                                all_filtered$text, ignore.case = TRUE))
+TC <-  subset (all_filtered, grepl(pattern =  "Cruz | cruz | Ted | ted | Tedcruz | tedcruz | Ted Cruz | ted cruz" , 
+                                 all_filtered$text, ignore.case = TRUE))
+DT <- subset (all_filtered, grepl(pattern =  "Donaldtrump  | donaldtrump | Donald Trump | donald trump | Trump | trump | Donald | donald | Trumpf | trumpf" , 
+                                all_filtered$text, ignore.case = TRUE))
+MR <- subset (all_filtered, grepl(pattern =  "Marcorubio | marcorubio | Marco Rubio | marco rubio" , 
+                                all_filtered$text, ignore.case = TRUE))
+
 
 # also by party
 dem <- rbind(HC, BS)
 rep <- rbind(TC, DT)
-
-# all
-all_filtered <- tweets_all[useful_info]
 
 save (HC, file= 'HC.Rdata')
 save (BS, file= 'BS.Rdata')
@@ -90,9 +143,12 @@ save(rep, file='rep.Rdata')
 save (all_filtered, file= 'all_filtered.Rdata')
 
 ##### starting here.....after force quit .... as a sample....
-setwd("/Users/amp2261/Desktop")
+#setwd("/Users/amp2261/Desktop")
 load("HC.Rdata")
 load("BS.Rdata")
+
+
+
 
 
 ###########################################
@@ -200,13 +256,6 @@ tweet_corp <- function(filename){
   return(TweetCorpus)
 }
 
-
-
-# calling all the functions here
-wc(HC)
-tc <- tweet_corp(BS)
-# wordcloud(tc, min.freq = 900,  max.words = 500, random.order = FALSE, colors = brewer.pal(4, "Dark2"))
-
 ###########################################
 ##### Building Map #######
 ###########################################
@@ -282,13 +331,7 @@ map_gen_s <-function(filename){
   
 }
 
-
-
-
-#############
 # Counting by State
-#############
-
 # The single argument to this function, pointsDF, is a data.frame in which:
 #   - column 1 contains the longitude in degrees (negative in the US)
 #   - column 2 contains the latitude in degrees
@@ -311,7 +354,6 @@ latlong2state <- function(pointsDF) {
 }
 
 as.numeric.factor <- function(x) {as.numeric(levels(x))[x]}
-
 
 state_mp_cnt <- function(filename){
   filtered_file <- filename[complete.cases(filename) ,]
@@ -336,232 +378,60 @@ state_mp_cnt <- function(filename){
   print("three")
   spplot(USAsp['value'], col.regions= rainbow(100, start = 3/6, end = 4/6 ))
 }
-
-### calling functions
-map_gen_w(BS)
-map_gen_s(HC)
-state_mp_cnt(HC)
-
 ##############################################
 ########## Sentiment Analysis ################
 ##############################################
 
+lexicon <- read.csv("lexicon.csv", stringsAsFactors=F)
+positive.words <- lexicon$word[lexicon$polarity=="positive"]
+negative.words <- lexicon$word[lexicon$polarity=="negative"]
 
+sentiment <- function(filename, name_csv){
+  tc <- tweet_corp(filename)
+  pos_count <- sum(str_count(tc, positive.words))
+  neg_count <- sum(str_count(tc, negative.words))
+  polarity_df = data.frame(pos_count, 
+                        neg_count)
+  write.csv(polarity_df, file = name_csv)
 
-lexicon <- read.csv("lexicon_ps.csv", stringsAsFactors=F)
-econ.words <- lexicon$word[lexicon$polarity=="economy"]
-imm.words <- lexicon$word[lexicon$polarity=="immigration"]
-health.words <- lexicon$word[lexicon$polarity=="health_care"]
-military.words <- lexicon$word[lexicon$polarity=="military"]
-gun.words <- lexicon$word[lexicon$polarity=="gun_control"]
-china.words <- lexicon$word[lexicon$polarity=="china"]
-trade.words <- lexicon$word[lexicon$polarity=="trade"]
-race.words <- lexicon$word[lexicon$polarity=="race"]
-climate.words <- lexicon$word[lexicon$polarity=="climate_change"]
-religion.words <- lexicon$word[lexicon$polarity=="religion"]
-
-
-# Getting all the candidates into TweetCorpuses
-
-
-tc_HC <- tweet_corp(HC)
-tc_BS <- tweet_corp(BS)
-tc_TC <- tweet_corp(HTC)
-tc_DT <- tweet_corp(DT)
-tc_dem <- tweet_corp(dem)
-tc_rep <- tweet_corp(rep)
+}
 
 
 
-#### fix this with code from Surabhi
-all_econ <- sum(str_count(TweetCorpus, econ.words))
-all_imm <- sum(str_count(TweetCorpus, imm.words))
-all_health <- sum(str_count(TweetCorpus, health.words))
-all_military <- sum(str_count(TweetCorpus, military.words))
-all_gun <- sum(str_count(TweetCorpus, gun.words))
-all_china <- sum(str_count(TweetCorpus, china.words))
-all_trade <- sum(str_count(TweetCorpus, trade.words))
-all_race <- sum(str_count(TweetCorpus, race.words))
-all_climate <- sum(str_count(TweetCorpus, climate.words))
-all_religion <- sum(str_count(TweetCorpus, religion.words))
-
-HC_econ <- sum(str_count(TweetCorpusHC, econ.words))
-HC_imm <- sum(str_count(TweetCorpusHC, imm.words))
-HC_health <- sum(str_count(TweetCorpusHC, health.words))
-HC_military <- sum(str_count(TweetCorpusHC, military.words))
-HC_gun <- sum(str_count(TweetCorpusHC, gun.words))
-HC_china <- sum(str_count(TweetCorpusHC, china.words))
-HC_trade <- sum(str_count(TweetCorpusHC, trade.words))
-HC_race <- sum(str_count(TweetCorpusHC, race.words))
-HC_climate <- sum(str_count(TweetCorpusHC, climate.words))
-HC_religion <- sum(str_count(TweetCorpusHC, religion.words))
-
-HC_df = data.frame(HC_econ, 
-                   HC_imm, 
-                   HC_health, 
-                   HC_military, 
-                   HC_gun, 
-                   HC_china,
-                   HC_trade,
-                   HC_race, 
-                   HC_climate, 
-                   HC_religion)
-write.csv(HC_df, file = "HC_topics.csv")
-
-
-BS_econ <- sum(str_count(TweetCorpusBS, econ.words))
-BS_imm <- sum(str_count(TweetCorpusBS, imm.words))
-BS_health <- sum(str_count(TweetCorpusBS, health.words))
-BS_military <- sum(str_count(TweetCorpusBS, military.words))
-BS_gun <- sum(str_count(TweetCorpusBS, gun.words))
-BS_china <- sum(str_count(TweetCorpusBS, china.words))
-BS_trade <- sum(str_count(TweetCorpusBS, trade.words))
-BS_race <- sum(str_count(TweetCorpusBS, race.words))
-BS_climate <- sum(str_count(TweetCorpusBS, climate.words))
-BS_religion <- sum(str_count(TweetCorpusBS, religion.words))
-
-BS_df = data.frame(BS_econ, 
-                   BS_imm, 
-                   BS_health, 
-                   BS_military, 
-                   BS_gun, 
-                   BS_china,
-                   BS_trade,
-                   BS_race, 
-                   BS_climate, 
-                   BS_religion)
-write.csv(BS_df, file = "BS_topics.csv")
-
-TC_econ <- sum(str_count(TweetCorpusTC, econ.words))
-TC_imm <- sum(str_count(TweetCorpusTC, imm.words))
-TC_health <- sum(str_count(TweetCorpusTC, health.words))
-TC_military <- sum(str_count(TweetCorpusTC, military.words))
-TC_gun <- sum(str_count(TweetCorpusTC, gun.words))
-TC_china <- sum(str_count(TweetCorpusTC, china.words))
-TC_trade <- sum(str_count(TweetCorpusTC, trade.words))
-TC_race <- sum(str_count(TweetCorpusTC, race.words))
-TC_climate <- sum(str_count(TweetCorpusTC, climate.words))
-TC_religion <- sum(str_count(TweetCorpusTC, religion.words))
-
-TC_df = data.frame(TC_econ, 
-                   TC_imm, 
-                   TC_health, 
-                   TC_military, 
-                   TC_gun, 
-                   TC_china,
-                   TC_trade,
-                   TC_race, 
-                   TC_climate, 
-                   TC_religion)
-write.csv(TC_df, file = "TC_topics.csv")
-
-
-DT_econ <- sum(str_count(TweetCorpusDT, econ.words))
-DT_imm <- sum(str_count(TweetCorpusDT, imm.words))
-DT_health <- sum(str_count(TweetCorpusDT, health.words))
-DT_military <- sum(str_count(TweetCorpusDT, military.words))
-DT_gun <- sum(str_count(TweetCorpusDT, gun.words))
-DT_china <- sum(str_count(TweetCorpusDT, china.words))
-DT_trade <- sum(str_count(TweetCorpusDT, trade.words))
-DT_race <- sum(str_count(TweetCorpusDT, race.words))
-DT_climate <- sum(str_count(TweetCorpusDT, climate.words))
-DT_religion <- sum(str_count(TweetCorpusDT, religion.words))
-
-DT_df = data.frame(DT_econ, 
-                   DT_imm, 
-                   DT_health, 
-                   DT_military, 
-                   DT_gun, 
-                   DT_china,
-                   DT_trade,
-                   DT_race, 
-                   DT_climate, 
-                   DT_religion)
-write.csv(DT_df, file = "DT_topics.csv")
-
-D_econ <- sum(str_count(TweetCorpusD, econ.words))
-D_imm <- sum(str_count(TweetCorpusD, imm.words))
-D_health <- sum(str_count(TweetCorpusD, health.words))
-D_military <- sum(str_count(TweetCorpusD, military.words))
-D_gun <- sum(str_count(TweetCorpusD, gun.words))
-D_china <- sum(str_count(TweetCorpusD, china.words))
-D_trade <- sum(str_count(TweetCorpusD, trade.words))
-D_race <- sum(str_count(TweetCorpusD, race.words))
-D_climate <- sum(str_count(TweetCorpusD, climate.words))
-D_religion <- sum(str_count(TweetCorpusD, religion.words))
-
-
-D_df = data.frame(D_econ, 
-                  D_imm, 
-                  D_health, 
-                  D_military, 
-                  D_gun, 
-                  D_china,
-                  D_trade,
-                  D_race, 
-                  D_climate, 
-                  D_religion)
-write.csv(D_df, file = "D_topics.csv")
+plot_polarity <- function(filename){
+  ggplot(data=filename, aes(x=polarity, y=rate)) +
+    geom_bar(stat="identity", position=position_dodge())  +
+    scale_fill_brewer() +
+    ggtitle("Polarity of Candidate")
+}
 
 
 
 
 
+#############################################################
+# Calling functions from above here
 
 
-R_econ <- sum(str_count(TweetCorpusR, econ.words))
-R_imm <- sum(str_count(TweetCorpusR, imm.words))
-R_health <- sum(str_count(TweetCorpusR, health.words))
-R_military <- sum(str_count(TweetCorpusR, military.words))
-R_gun <- sum(str_count(TweetCorpusR, gun.words))
-R_china <- sum(str_count(TweetCorpusR, china.words))
-R_trade <- sum(str_count(TweetCorpusR, trade.words))
-R_race <- sum(str_count(TweetCorpusR, race.words))
-R_climate <- sum(str_count(TweetCorpusR, climate.words))
-R_religion <- sum(str_count(TweetCorpusR, religion.words))
-
-R_df = data.frame(R_econ, 
-                  R_imm, 
-                  R_health, 
-                  R_military, 
-                  R_gun, 
-                  R_china,
-                  R_trade,
-                  R_race, 
-                  R_climate, 
-                  R_religion)
-write.csv(R_df, file = "R_topics.csv")
+# wordclouds
+wc(HC)
 
 
-###### After running rediculously
+# generating social network
+## TBD
 
-HC_df = read.csv("HC_topics.csv")
-BS_df = read.csv("BS_topics.csv")
-TC_df = read.csv("TC_topics.csv")
-DT_df = read.csv("DT_topics.csv")
-dem_df = read.csv("D_topics.csv")
-rep_df = read.csv("R_topics.csv")
+# building general map
+## TBD
 
+# generating maps
+## First two don't work....
+map_gen_w(BS)
+map_gen_s(HC)
+state_mp_cnt(HC)
 
-dem_compared = read.csv("dem_compare.csv") 
-ggplot(data=dem_compared, aes(x=term, y=rate, fill=name)) +
-  geom_bar(stat="identity", position=position_dodge())  +
-  scale_fill_brewer() +
-  ggtitle("Rate of Topics Per Candidate")
-
-
-
-rep_compared = read.csv("rep_compare.csv") 
-ggplot(data=rep_compared, aes(x=term, y=rate, fill=name)) +
-  geom_bar(stat="identity", position=position_dodge())  +
-  scale_fill_manual(values=c("#FF9999", "#FF6666")) +
-  ggtitle("Rate of Topics Per Candidate")
-
-
-party_compared = read.csv("party_compare.csv") 
-ggplot(data=party_compared, aes(x=term, y=rate, fill=party)) +
-  geom_bar(stat="identity", position=position_dodge())  +
-  scale_fill_manual(values=c("#6699FF", "#FF6666")) +
-  ggtitle("Rate of Topics Per Candidate")
-
-
+# sentiment analysis
+sentiment(HC, "HC_polarity.csv")
+########
+## before this we have to create rates by hand on csv file........
+HC_p<- read.csv("HC_polarity_e.csv")
+plot_polarity(HC_p)
