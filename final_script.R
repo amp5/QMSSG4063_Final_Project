@@ -4,7 +4,6 @@ setwd("/Users/alexandraplassaras/Desktop/Columbia_Courses/Spring_2016/QMSS_G4063
 # school comp wd
 setwd("/Users/amp2261/Desktop/Final_Project")
 
-
 ########################################
 #### Libraries Needed #######
 ########################################
@@ -62,6 +61,7 @@ load("tweets.22-26Feb.Rda")
 load("tweets.01-05April.RData")
 load("tweets.21-25March.Rda")
 load("tweets.16-20March.Rda")
+
 load("tweets.15-21Feb.Rda")
 load("tweets.12-14Feb.Rda")
 load("tweets.11-15March.RData")
@@ -70,8 +70,13 @@ load("tweets.06-15April.RData")
 load("tweets.06-10March.Rda")
 load("tweets.01-05March.Rda")
 
-
-tweets_all <- rbind(tweets.02.12.2016, 
+# can't do this in one session. R Keeps crashing..........
+tweets_all <- rbind(tweets.02.07.2016, 
+                    tweets.02.08.2016, 
+                    tweets.02.09.2016, 
+                    tweets.02.10.2016, 
+                    tweets.02.11.2016, 
+                    tweets.02.12.2016,
                     tweets.02.13.2016, 
                     tweets.02.14.2016, 
                     tweets.02.15.2016, 
@@ -86,7 +91,17 @@ tweets_all <- rbind(tweets.02.12.2016,
                     tweets.02.26.2016, 
                     tweets.02.27.2016, 
                     tweets.02.28.2016, 
-                    tweets.02.29.2016, 
+                    tweets.02.29.2016,
+                    tweets.03.01.2016,
+                    tweets.03.02.2016,
+                    tweets.03.03.2016,
+                    tweets.03.04.2016,
+                    tweets.03.05.2016,
+                    tweets.03.06.2016,
+                    tweets.03.07.2016,
+                    tweets.03.08.2016,
+                    tweets.03.09.2016,
+                    tweets.03.10.2016,
                     tweets.03.11.2016,
                     tweets.03.12.2016,
                     tweets.03.13.2016,
@@ -102,31 +117,65 @@ tweets_all <- rbind(tweets.02.12.2016,
                     tweets.03.23.2016, 
                     tweets.03.24.2016, 
                     tweets.03.25.2016, 
-                
                     tweets.04.01.2016,
                     tweets.04.02.2016,
                     tweets.04.03.2016,
                     tweets.04.04.2016,
                     tweets.04.05.2016,
-                    
-                    
-                    )
+                    tweets.04.06.2016,
+                    tweets.04.07.2016,
+                    tweets.04.08.2016,
+                    tweets.04.09.2016,
+                    tweets.04.10.2016,
+                    tweets.04.15.2016
+)
 
+test <- tweets.04.15.2016
+
+
+# function could be useful when we want to look at the data by days or chunks of days
+subset_tw <- function(filename){
+  useful_info <- c("text", "id_str", "created_at", "screen_name", "place_lat", "place_lon",  "lat", "lon", "country_code", "retweeted", "retweet_count")
+  filtered <- filename[useful_info]
+  HC <- subset (filtered, grepl(pattern =  "Clinton | clinton | Hillary | hillary | Hillaryclinton | hillaryclinton | Hillary Clinton | hillary clinton" , 
+                                    filtered$text, ignore.case = TRUE))
+  BS <- subset (filtered, grepl(pattern =  "Berniesanders | berniesanders | Bernie Sanders  | bernie sanders | Bernie | bernie | Sensanders | sensanders" , 
+                                    filtered$text, ignore.case = TRUE))
+  TC <-  subset (filtered, grepl(pattern =  "Cruz | cruz | Ted | ted | Tedcruz | tedcruz | Ted Cruz | ted cruz" , 
+                                     filtered$text, ignore.case = TRUE))
+  DT <- subset (filtered, grepl(pattern =  "Donaldtrump  | donaldtrump | Donald Trump | donald trump | Trump | trump | Donald | donald | Trumpf | trumpf" , 
+                                    filtered$text, ignore.case = TRUE))
+  MR <- subset (filtered, grepl(pattern =  "Marcorubio | marcorubio | Marco Rubio | marco rubio" , 
+                                    filtered$text, ignore.case = TRUE))
+  # also by party
+  dem <- rbind(HC, BS)
+  rep <- rbind(TC, DT)
+  
+  save (HC, file= 'HC.Rdata')
+  save (BS, file= 'BS.Rdata')
+  save (TC, file= 'TC.Rdata')
+  save (DT, file= 'DT.Rdata')
+  save (MR, file= 'MR.Rdata')
+  save(dem, file='dem.Rdata')
+  save(rep, file='rep.Rdata')
+  save (filtered, file= 'all_filtered.Rdata')
+}
+
+
+subset_tw(test)
 
 useful_info <- c("text", "id_str", "created_at", "screen_name", "place_lat", "place_lon",  "lat", "lon", "country_code", "retweeted", "retweet_count")
 all_filtered <- tweets_all[useful_info]
-
-
 HC <- subset (all_filtered, grepl(pattern =  "Clinton | clinton | Hillary | hillary | Hillaryclinton | hillaryclinton | Hillary Clinton | hillary clinton" , 
-                                all_filtered$text, ignore.case = TRUE))
+                                  all_filtered$text, ignore.case = TRUE))
 BS <- subset (all_filtered, grepl(pattern =  "Berniesanders | berniesanders | Bernie Sanders  | bernie sanders | Bernie | bernie | Sensanders | sensanders" , 
-                                all_filtered$text, ignore.case = TRUE))
+                                  all_filtered$text, ignore.case = TRUE))
 TC <-  subset (all_filtered, grepl(pattern =  "Cruz | cruz | Ted | ted | Tedcruz | tedcruz | Ted Cruz | ted cruz" , 
-                                 all_filtered$text, ignore.case = TRUE))
+                                   all_filtered$text, ignore.case = TRUE))
 DT <- subset (all_filtered, grepl(pattern =  "Donaldtrump  | donaldtrump | Donald Trump | donald trump | Trump | trump | Donald | donald | Trumpf | trumpf" , 
-                                all_filtered$text, ignore.case = TRUE))
+                                  all_filtered$text, ignore.case = TRUE))
 MR <- subset (all_filtered, grepl(pattern =  "Marcorubio | marcorubio | Marco Rubio | marco rubio" , 
-                                all_filtered$text, ignore.case = TRUE))
+                                  all_filtered$text, ignore.case = TRUE))
 
 
 # also by party
@@ -204,6 +253,12 @@ wc <- function(filename){
   return(wordcloud(TweetCorpus, min.freq = 900,  max.words = 500, random.order = FALSE, colors = brewer.pal(4, "Dark2")))
 }
 
+# does this work????
+wc_t <- function(filename){
+  return(wordcloud(tweet_corp(filename), min.freq = 900,  max.words = 500, random.order = FALSE, colors = brewer.pal(4, "Dark2")))
+}
+
+wc_t(HC)
 
 # creating a tweetcorpus, just insert the db filename into function, will receive TweetCorpus as a result
 # don't forget to set this to a var name
@@ -296,9 +351,49 @@ ggplot(map.data) + geom_map(aes(map_id = region), map = map.data, fill = "#fdf9f
 ###########################################
 ####### Building a Social Network #########
 ###########################################
+Force_clinton <- read.csv("force_clinton.csv", header = TRUE, sep = ",", quote = "\"",
+                          dec = ".", fill = TRUE, comment.char = "")
 
+Force_bernie <- read.csv("force_sanders.csv", header = TRUE, sep = ",", quote = "\"",
+                         dec = ".", fill = TRUE, comment.char = "")
 
-### This one is tbd.......
+Force_trump <- read.csv("force_trump.csv", header = TRUE, sep = ",", quote = "\"",
+                        dec = ".", fill = TRUE, comment.char = "")
+
+Force_cruz <- read.csv("force_cruz.csv", header = TRUE, sep = ",", quote = "\"",
+                       dec = ".", fill = TRUE, comment.char = "")
+
+output$simple_Clinton <- renderSimpleNetwork({
+  src <- Force_clinton$source
+  target <- Force_clinton$target
+  networkData <- data.frame(src, target) 
+  simpleNetwork(networkData)
+  
+})
+
+output$simple_Bernie <- renderSimpleNetwork({
+  src <- Force_bernie$source
+  target <- Force_bernie$target
+  networkData <- data.frame(src, target) 
+  simpleNetwork(networkData)
+  
+})
+
+output$simple_Cruz <- renderSimpleNetwork({
+  src <- Force_cruz$source
+  target <- Force_cruz$target
+  networkData <- data.frame(src, target) 
+  simpleNetwork(networkData)
+  
+})
+
+output$simple_Trump <- renderSimpleNetwork({
+  src <- Force_trump$source
+  target <- Force_trump$target
+  networkData <- data.frame(src, target) 
+  simpleNetwork(networkData)
+  
+})
 
 
 ###########################################
@@ -391,9 +486,9 @@ sentiment <- function(filename, name_csv){
   pos_count <- sum(str_count(tc, positive.words))
   neg_count <- sum(str_count(tc, negative.words))
   polarity_df = data.frame(pos_count, 
-                        neg_count)
+                           neg_count)
   write.csv(polarity_df, file = name_csv)
-
+  
 }
 
 
