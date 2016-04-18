@@ -138,15 +138,15 @@ subset_tw <- function(filename){
   useful_info <- c("text", "id_str", "created_at", "screen_name", "place_lat", "place_lon",  "lat", "lon", "country_code", "retweeted", "retweet_count")
   filtered <- filename[useful_info]
   HC <- subset (filtered, grepl(pattern =  "Clinton | clinton | Hillary | hillary | Hillaryclinton | hillaryclinton | Hillary Clinton | hillary clinton" , 
-                                    filtered$text, ignore.case = TRUE))
+                                filtered$text, ignore.case = TRUE))
   BS <- subset (filtered, grepl(pattern =  "Berniesanders | berniesanders | Bernie Sanders  | bernie sanders | Bernie | bernie | Sensanders | sensanders" , 
-                                    filtered$text, ignore.case = TRUE))
+                                filtered$text, ignore.case = TRUE))
   TC <-  subset (filtered, grepl(pattern =  "Cruz | cruz | Ted | ted | Tedcruz | tedcruz | Ted Cruz | ted cruz" , 
-                                     filtered$text, ignore.case = TRUE))
+                                 filtered$text, ignore.case = TRUE))
   DT <- subset (filtered, grepl(pattern =  "Donaldtrump  | donaldtrump | Donald Trump | donald trump | Trump | trump | Donald | donald | Trumpf | trumpf" , 
-                                    filtered$text, ignore.case = TRUE))
+                                filtered$text, ignore.case = TRUE))
   MR <- subset (filtered, grepl(pattern =  "Marcorubio | marcorubio | Marco Rubio | marco rubio" , 
-                                    filtered$text, ignore.case = TRUE))
+                                filtered$text, ignore.case = TRUE))
   # also by party
   dem <- rbind(HC, BS)
   rep <- rbind(TC, DT)
@@ -162,34 +162,13 @@ subset_tw <- function(filename){
 }
 
 
+
+
 subset_tw(test)
 
-useful_info <- c("text", "id_str", "created_at", "screen_name", "place_lat", "place_lon",  "lat", "lon", "country_code", "retweeted", "retweet_count")
-all_filtered <- tweets_all[useful_info]
-HC <- subset (all_filtered, grepl(pattern =  "Clinton | clinton | Hillary | hillary | Hillaryclinton | hillaryclinton | Hillary Clinton | hillary clinton" , 
-                                  all_filtered$text, ignore.case = TRUE))
-BS <- subset (all_filtered, grepl(pattern =  "Berniesanders | berniesanders | Bernie Sanders  | bernie sanders | Bernie | bernie | Sensanders | sensanders" , 
-                                  all_filtered$text, ignore.case = TRUE))
-TC <-  subset (all_filtered, grepl(pattern =  "Cruz | cruz | Ted | ted | Tedcruz | tedcruz | Ted Cruz | ted cruz" , 
-                                   all_filtered$text, ignore.case = TRUE))
-DT <- subset (all_filtered, grepl(pattern =  "Donaldtrump  | donaldtrump | Donald Trump | donald trump | Trump | trump | Donald | donald | Trumpf | trumpf" , 
-                                  all_filtered$text, ignore.case = TRUE))
-MR <- subset (all_filtered, grepl(pattern =  "Marcorubio | marcorubio | Marco Rubio | marco rubio" , 
-                                  all_filtered$text, ignore.case = TRUE))
 
 
-# also by party
-dem <- rbind(HC, BS)
-rep <- rbind(TC, DT)
 
-save (HC, file= 'HC.Rdata')
-save (BS, file= 'BS.Rdata')
-save (TC, file= 'TC.Rdata')
-save (DT, file= 'DT.Rdata')
-save (MR, file= 'MR.Rdata')
-save(dem, file='dem.Rdata')
-save(rep, file='rep.Rdata')
-save (all_filtered, file= 'all_filtered.Rdata')
 
 ##### starting here.....after force quit .... as a sample....
 #setwd("/Users/amp2261/Desktop")
