@@ -1,0 +1,274 @@
+---
+title: "Final Project"
+author: "Alexandra Plassaras, Surabhi Bajpai, Adnan Hajizada and Saad Khalid"
+date: "April 16, 2016"
+output: html_document
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+setwd("/Users/amp2261/Desktop/Final_Project")
+library(bitops)
+library(RCurl)
+library(rjson)
+library(streamR)
+library(RColorBrewer)
+library(wordcloud)
+library(NLP)
+library(tm)
+library(ggplot2)
+library(sp)
+library(maps)
+library(maptools)
+library(rworldmap)
+library(grid)
+library(stringr)
+library(plyr)
+
+load("HC.Rdata")
+load("BS.Rdata")
+
+```
+
+```{r echo=FALSE}
+
+###########################################
+####### Creating Word Cloud ########
+###########################################
+wc <- function(filename){
+  filename$text <- sapply(filename$text,function(row) iconv(row, "latin1", "ASCII", sub=""))
+  TweetCorpus<-paste(unlist(filename$text), collapse =" ")
+  TweetCorpus <- Corpus(VectorSource(TweetCorpus))
+  TweetCorpus <- tm_map(TweetCorpus, removePunctuation)
+  TweetCorpus <- tm_map(TweetCorpus, removeWords, stopwords("english"))
+  #TweetCorpus <- tm_map(TweetCorpus, stemDocument)
+  TweetCorpus <- tm_map(TweetCorpus, content_transformer(tolower),lazy=TRUE)
+  TweetCorpus <- tm_map(TweetCorpus, PlainTextDocument)
+  TweetCorpus <- tm_map(TweetCorpus, removeWords, c("https",
+                                                    "https...",
+                                                    "via",
+                                                    "use",
+                                                    "just",
+                                                    "think",
+                                                    "say",
+                                                    "that",
+                                                    "its",
+                                                    "like",
+                                                    "this",
+                                                    "will",
+                                                    "the",
+                                                    "lol", 
+                                                    "now", 
+                                                    "one", 
+                                                    "still", 
+                                                    "whi",
+                                                    "amp",
+                                                    "let",
+                                                    "ill",
+                                                    "come",
+                                                    "shit",
+                                                    "and",
+                                                    "realli",
+                                                    "your",
+                                                    "you",
+                                                    "fuck",
+                                                    "last",
+                                                    "for",
+                                                    "much",
+                                                    "see",
+                                                    "got",
+                                                    "can",
+                                                    "get"
+  ))
+  return(wordcloud(TweetCorpus, min.freq = 900,  max.words = 500, random.order = FALSE, colors = brewer.pal(4, "Dark2")))
+}
+
+tweet_corp <- function(filename){
+  filename$text <- sapply(filename$text,function(row) iconv(row, "latin1", "ASCII", sub=""))
+  TweetCorpus<-paste(unlist(filename$text), collapse =" ")
+  TweetCorpus <- Corpus(VectorSource(TweetCorpus))
+  TweetCorpus <- tm_map(TweetCorpus, removePunctuation)
+  TweetCorpus <- tm_map(TweetCorpus, removeWords, stopwords("english"))
+  #TweetCorpus <- tm_map(TweetCorpus, stemDocument)
+  TweetCorpus <- tm_map(TweetCorpus, content_transformer(tolower),lazy=TRUE)
+  TweetCorpus <- tm_map(TweetCorpus, PlainTextDocument)
+  TweetCorpus <- tm_map(TweetCorpus, removeWords, c("https",
+                                                    "https...",
+                                                    "via",
+                                                    "use",
+                                                    "just",
+                                                    "think",
+                                                    "say",
+                                                    "that",
+                                                    "its",
+                                                    "like",
+                                                    "this",
+                                                    "will",
+                                                    "the",
+                                                    "lol", 
+                                                    "now", 
+                                                    "one", 
+                                                    "still", 
+                                                    "whi",
+                                                    "amp",
+                                                    "let",
+                                                    "ill",
+                                                    "come",
+                                                    "shit",
+                                                    "and",
+                                                    "realli",
+                                                    "your",
+                                                    "you",
+                                                    "fuck",
+                                                    "last",
+                                                    "for",
+                                                    "much",
+                                                    "see",
+                                                    "got",
+                                                    "can",
+                                                    "get"
+  ))
+  return(TweetCorpus)
+}
+
+###########################################
+##### Building Map #######
+###########################################
+map.data <- map_data("state")
+
+##### UNABLE TO GET THIS FUNCTION WORKING
+map_tweets <- function(filename){
+  only_coords <- filename[complete.cases(filename) ,]
+  us_coords <- only_coords[only_coords$country_code == 'US',]
+  points <- data.frame(x = as.numeric(us_coords$place_lon), y = as.numeric(us_coords$place_lat))
+  points <- points[points$y > 25, ]
+  ggplot(map.data) + geom_map(aes(map_id = region), map = map.data, fill = "#fdf9f9", 
+                              color = "#9d9595", size = 0.25) + expand_limits(x = map.data$long, y = map.data$lat) + 
+    theme(axis.line = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), 
+          axis.title = element_blank(), panel.background = element_blank(), panel.border = element_blank(), 
+          panel.grid.major = element_blank(), plot.background = element_blank(), 
+          plot.margin = unit(0 * c(-1.5, -1.5, -1.5, -1.5), "lines")) + geom_point(data = points, 
+                                                                                   aes(x = x, y = y), size = 1, alpha = 1/5, color = "#CC6666") 
+}
+
+###########################################
+####### Building a Social Network #########
+###########################################
+
+
+### This one is tbd.......
+
+###########################################
+####### More Mapping #########
+###########################################
+world <- map_data("world")
+US_states <- map_data("state")
+
+map_gen_w <-function(filename){
+  filtered_file <- filename[complete.cases(filename) ,]
+  ggplot(world) + geom_map(aes(map_id = region), map = world, fill = "grey90", color = "grey50", size = 0.25) + 
+    expand_limits(x = as.numeric(world$long), y = as.numeric(world$lat)) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + 
+    theme_minimal() + geom_point(data = filtered_file, aes(x = as.numeric(lon), y = as.numeric(lat)), size = 1, alpha = 1/5, color = "blue")
+}
+
+map_gen_s <-function(filename){
+  filtered_file <- filename[complete.cases(filename) ,]
+  filtered_file <- filtered_file[filtered_file$country_code=='US',] 
+  ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + 
+    expand_limits(x = as.numeric(US_states$long), y = as.numeric(US_states$lat)) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + 
+    theme_minimal() + geom_point(data = filtered_file, aes(x = as.numeric(place_lon), y = as.numeric(place_lat)), size = 1, alpha = 1/5, color = "blue")
+  
+}
+
+latlong2state <- function(pointsDF) {
+  states <- map('state', fill=TRUE, col="transparent", plot=FALSE)
+  IDs <- sapply(strsplit(states$names, ":"), function(x) x[1])
+  states_sp <- map2SpatialPolygons(states, IDs=IDs,
+                                   proj4string=CRS("+proj=longlat +datum=WGS84"))
+  pointsSP <- SpatialPoints(pointsDF, 
+                            proj4string=CRS("+proj=longlat +datum=WGS84"))
+  indices <- over(pointsSP, states_sp)
+  stateNames <- sapply(states_sp@polygons, function(x) x@ID)
+  stateNames[indices]
+}
+
+as.numeric.factor <- function(x) {as.numeric(levels(x))[x]}
+
+state_mp_cnt <- function(filename){
+  filtered_file <- filename[complete.cases(filename) ,]
+  filtered_file <- filtered_file[filtered_file$country_code=='US',] 
+  geo_pts <- c("place_lon", "place_lat")
+  df_pt <-  filtered_file[geo_pts]
+  df_pt$place_lon <- as.numeric.factor(df_pt$place_lon)
+  
+  df_pt$state <- latlong2state(df_pt)
+  filtered_df <- df_pt[!(is.na(df_pt$state)),]
+  count(filtered_df, "state")
+  state_df <- count(filtered_df, "state")
+  print("two")
+  
+  mapUSA <- map('state',  fill = TRUE,  plot = FALSE)
+  nms <- sapply(strsplit(mapUSA$names,  ':'),  function(x)x[1])
+  USApolygons <- map2SpatialPolygons(mapUSA,  IDs = nms,  CRS('+proj=longlat'))
+  idx <- match(unique(nms),  state_df$state)
+  dat2 <- data.frame(value = state_df$freq[idx], state = unique(nms))
+  row.names(dat2) <- unique(nms)
+  USAsp <- SpatialPolygonsDataFrame(USApolygons,  data = dat2)
+  print("three")
+  spplot(USAsp['value'], col.regions= rainbow(100, start = 3/6, end = 4/6 ))
+}
+
+##############################################
+########## Sentiment Analysis ################
+##############################################
+
+lexicon <- read.csv("lexicon.csv", stringsAsFactors=F)
+positive.words <- lexicon$word[lexicon$polarity=="positive"]
+negative.words <- lexicon$word[lexicon$polarity=="negative"]
+
+# sentiment function remove since there is still some manual calc going on here....
+
+plot_polarity <- function(filename){
+  ggplot(data=filename, aes(x=polarity, y=rate)) +
+    geom_bar(stat="identity", position=position_dodge())  +
+    scale_fill_brewer() +
+    ggtitle("Polarity of Candidate")
+}
+
+
+```
+
+Wordclouds:
+```{r}
+wc(HC)
+
+```
+
+
+Next up maps. Some work, some dont....
+```{r warning=FALSE, message=FALSE}
+map_tweets(HC)
+map_gen_w(BS)
+map_gen_s(HC)
+state_mp_cnt(HC)
+
+```
+
+Social Networks:
+```{r}
+# TBD
+```
+
+
+Sentiment Analysis:
+```{r warning=FALSE, message=FALSE}
+
+HC_p<- read.csv("HC_polarity_e.csv")
+plot_polarity(HC_p)
+
+```
+
