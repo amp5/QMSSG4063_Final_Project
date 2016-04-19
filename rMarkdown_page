@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 setwd("/Users/amp2261/Desktop/Final_Project")
+
 library(bitops)
 library(RCurl)
 library(rjson)
@@ -30,9 +31,8 @@ library(stringr)
 library(plyr)
 
 load("HC.Rdata")
-load("BS.Rdata")
-
 ```
+
 
 ```{r echo=FALSE}
 
@@ -135,16 +135,16 @@ tweet_corp <- function(filename){
   return(TweetCorpus)
 }
 
+
 ###########################################
 ##### Building Map #######
 ###########################################
 map.data <- map_data("state")
 
-##### UNABLE TO GET THIS FUNCTION WORKING
 map_tweets <- function(filename){
   only_coords <- filename[complete.cases(filename) ,]
   us_coords <- only_coords[only_coords$country_code == 'US',]
-  points <- data.frame(x = as.numeric(us_coords$place_lon), y = as.numeric(us_coords$place_lat))
+  points <- data.frame(x = as.numeric(as.character(us_coords$place_lon)), y = as.numeric(as.character(us_coords$place_lat)))
   points <- points[points$y > 25, ]
   ggplot(map.data) + geom_map(aes(map_id = region), map = map.data, fill = "#fdf9f9", 
                               color = "#9d9595", size = 0.25) + expand_limits(x = map.data$long, y = map.data$lat) + 
@@ -156,13 +156,6 @@ map_tweets <- function(filename){
 }
 
 ###########################################
-####### Building a Social Network #########
-###########################################
-
-
-### This one is tbd.......
-
-###########################################
 ####### More Mapping #########
 ###########################################
 world <- map_data("world")
@@ -171,16 +164,19 @@ US_states <- map_data("state")
 map_gen_w <-function(filename){
   filtered_file <- filename[complete.cases(filename) ,]
   ggplot(world) + geom_map(aes(map_id = region), map = world, fill = "grey90", color = "grey50", size = 0.25) + 
-    expand_limits(x = as.numeric(world$long), y = as.numeric(world$lat)) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + 
-    theme_minimal() + geom_point(data = filtered_file, aes(x = as.numeric(lon), y = as.numeric(lat)), size = 1, alpha = 1/5, color = "blue")
+    expand_limits(x = as.numeric(as.character(world$long)), y = as.numeric(as.character(world$lat))) + 
+    scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + 
+    geom_point(data = filtered_file, aes(x = as.numeric(as.character(lon)), y = as.numeric(as.character(lat))), size = 1, alpha = 1/5, color = "blue")
 }
 
 map_gen_s <-function(filename){
   filtered_file <- filename[complete.cases(filename) ,]
   filtered_file <- filtered_file[filtered_file$country_code=='US',] 
+  str(filename)
   ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + 
-    expand_limits(x = as.numeric(US_states$long), y = as.numeric(US_states$lat)) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + 
-    theme_minimal() + geom_point(data = filtered_file, aes(x = as.numeric(place_lon), y = as.numeric(place_lat)), size = 1, alpha = 1/5, color = "blue")
+    expand_limits(x = as.numeric(as.character(US_states$long)), y = as.numeric(as.character(US_states$lat))) + 
+    scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + 
+    geom_point(data = filtered_file, aes(x = as.numeric(as.character(place_lon)), y = as.numeric(as.character(place_lat))), size = 1, alpha = 1/5, color = "blue")
   
 }
 
@@ -242,17 +238,30 @@ plot_polarity <- function(filename){
 
 ```
 
+
+
+
 Wordclouds:
 ```{r}
 wc(HC)
-
+wc(BS)
+wc(TC)
+wc(DT)
+wc(dem)
+wc(rep)
 ```
 
 
-Next up maps. Some work, some dont....
+Next up maps. Some work better than others.....
 ```{r warning=FALSE, message=FALSE}
 map_tweets(HC)
-map_gen_w(BS)
+map_tweets(BS)
+map_tweets(TC)
+map_tweets(DT)
+map_tweets(dem)
+map_tweets(rep)
+
+map_gen_w(HC)
 map_gen_s(HC)
 state_mp_cnt(HC)
 
