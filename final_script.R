@@ -302,7 +302,7 @@ map.data <- map_data("state")
 map_tweets <- function(filename){
   only_coords <- filename[complete.cases(filename) ,]
   us_coords <- only_coords[only_coords$country_code == 'US',]
-  points <- data.frame(x = as.numeric(us_coords$place_lon), y = as.numeric(us_coords$place_lat))
+  points <- data.frame(x = as.numeric(as.character(us_coords$place_lon)), y = as.numeric(as.character(us_coords$place_lat)))
   points <- points[points$y > 25, ]
   ggplot(map.data) + geom_map(aes(map_id = region), map = map.data, fill = "#fdf9f9", 
                               color = "#9d9595", size = 0.25) + expand_limits(x = map.data$long, y = map.data$lat) + 
@@ -312,20 +312,6 @@ map_tweets <- function(filename){
           plot.margin = unit(0 * c(-1.5, -1.5, -1.5, -1.5), "lines")) + geom_point(data = points, 
                                                                                    aes(x = x, y = y), size = 1, alpha = 1/5, color = "#CC6666") 
 }
-
-map_tweets(HC)
-
-
-points <- data.frame(x = as.numeric(HC$place_lon), y = as.numeric(HC$place_lat))
-points <- points[points$y > 25, ]
-## How can I get this to separate between Hillary and Sanders
-ggplot(map.data) + geom_map(aes(map_id = region), map = map.data, fill = "#fdf9f9", 
-                            color = "#9d9595", size = 0.25) + expand_limits(x = map.data$long, y = map.data$lat) + 
-  theme(axis.line = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), 
-        axis.title = element_blank(), panel.background = element_blank(), panel.border = element_blank(), 
-        panel.grid.major = element_blank(), plot.background = element_blank(), 
-        plot.margin = unit(0 * c(-1.5, -1.5, -1.5, -1.5), "lines")) + geom_point(data = points, 
-                                                                                 aes(x = x, y = y), size = 1, alpha = 1/5, color = "#CC6666") 
 
 ###########################################
 ####### Building a Social Network #########
@@ -384,24 +370,28 @@ output$simple_Trump <- renderSimpleNetwork({
 ## TODO: GET THIS SECTION OF THE CODE (OR YOUR CODE FROM HW 3 WORKING IN GENERAL) TO WORK! THEN MAKE IT INTO A FUNCTION. 
 world <- map_data("world")
 US_states <- map_data("state")
-ggplot()+ geom_polygon( data=world, aes(x=long, y=lat, group = group),colour="white", fill="grey10" )
 
 ##### Problem with ggplot and mapping
 #### getting a formatting error....
 
+points <- data.frame(x = as.numeric(as.character(us_coords$place_lon)), y = as.numeric(as.character(us_coords$place_lat)))
+
 map_gen_w <-function(filename){
   filtered_file <- filename[complete.cases(filename) ,]
   ggplot(world) + geom_map(aes(map_id = region), map = world, fill = "grey90", color = "grey50", size = 0.25) + 
-    expand_limits(x = as.numeric(world$long), y = as.numeric(world$lat)) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + 
-    theme_minimal() + geom_point(data = filtered_file, aes(x = as.numeric(lon), y = as.numeric(lat)), size = 1, alpha = 1/5, color = "blue")
+    expand_limits(x = as.numeric(as.character(world$long)), y = as.numeric(as.character(world$lat))) + 
+    scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + 
+    geom_point(data = filtered_file, aes(x = as.numeric(as.character(lon)), y = as.numeric(as.character(lat))), size = 1, alpha = 1/5, color = "blue")
 }
 
 map_gen_s <-function(filename){
   filtered_file <- filename[complete.cases(filename) ,]
   filtered_file <- filtered_file[filtered_file$country_code=='US',] 
+  str(filename)
   ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + 
-    expand_limits(x = as.numeric(US_states$long), y = as.numeric(US_states$lat)) + scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + 
-    theme_minimal() + geom_point(data = filtered_file, aes(x = as.numeric(place_lon), y = as.numeric(place_lat)), size = 1, alpha = 1/5, color = "blue")
+    expand_limits(x = as.numeric(as.character(US_states$long)), y = as.numeric(as.character(US_states$lat))) + 
+    scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + 
+    geom_point(data = filtered_file, aes(x = as.numeric(as.character(place_lon)), y = as.numeric(as.character(place_lat))), size = 1, alpha = 1/5, color = "blue")
   
 }
 
@@ -495,7 +485,7 @@ wc(HC)
 ## TBD
 
 # building general map
-## TBD
+map_tweets(HC)
 
 # generating maps
 ## First two don't work....
