@@ -55,7 +55,87 @@ gpclibPermit()
 ####################################################
 load("/Users/amp2261/Desktop/wetransfer-684680/tweets.21_25.Rda")
 
+# loading sumary files to get better idea of bigger picture
+load("tweets.01-15Mar.summary.Rda")
+load("tweets.01-17Apr.summary.Rda")
+load("tweets.07-18Feb.summary.Rda")
+load("tweets.16-31Mar.summary.Rda")
+load("tweets.19-29Feb.summary.Rda")
 
+#useful_info <- c("text", "id_str", "created_at", "screen_name", "place_lat", "place_lon",  "lat", "lon", "country_code", "retweeted", "retweet_count")
+# tweets.03.31.2016.summary <- tweets.03.31.2016.summary[useful_info]
+
+tweets_all_sum <- rbind(tweets.02.07.2016.summary,
+                   tweets.02.08.2016.summary, 
+                   tweets.02.09.2016.summary, 
+                   tweets.02.10.2016.summary, 
+                   tweets.02.11.2016.summary, 
+                   tweets.02.12.2016.summary, 
+                   tweets.02.13.2016.summary,
+                   tweets.02.14.2016.summary,
+                   tweets.02.15.2016.summary,
+                   tweets.02.18.2016.summary,
+                   tweets.02.19.2016.summary,
+                   tweets.02.20.2016.summary,
+                   tweets.02.21.2016.summary,
+                   tweets.02.22.2016.summary,
+                   tweets.02.23.2016.summary,
+                   tweets.02.24.2016.summary,
+                   tweets.02.25.2016.summary,
+                   tweets.02.26.2016.summary,
+                   tweets.02.27.2016.summary,
+                   tweets.02.28.2016.summary,
+                   tweets.02.29.2016.summary,
+                   tweets.03.01.2016.summary,
+                   tweets.03.02.2016.summary,
+                   tweets.03.03.2016.summary,
+                   tweets.03.04.2016.summary,
+                   tweets.03.05.2016.summary,
+                   tweets.03.06.2016.summary,
+                   tweets.03.07.2016.summary,
+                   tweets.03.08.2016.summary,
+                   tweets.03.09.2016.summary,
+                   tweets.03.10.2016.summary,
+                   tweets.03.11.2016.summary,
+                   tweets.03.12.2016.summary,
+                   tweets.03.13.2016.summary,
+                   tweets.03.14.2016.summary,
+                   tweets.03.15.2016.summary,
+                   tweets.03.16.2016.summary,
+                   tweets.03.17.2016.summary,
+                   tweets.03.18.2016.summary,
+                   tweets.03.19.2016.summary,
+                   tweets.03.20.2016.summary,
+                   tweets.03.21.2016.summary,
+                   tweets.03.22.2016.summary,
+                   tweets.03.23.2016.summary,
+                   tweets.03.24.2016.summary,
+                   tweets.03.25.2016.summary,
+                   tweets.03.26.2016.summary,
+                   tweets.03.27.2016.summary,
+                   tweets.03.28.2016.summary,
+                   tweets.03.29.2016.summary,
+                   tweets.03.30.2016.summary,
+                   tweets.03.31.2016.summary,
+                   tweets.04.01.2016.summary,
+                   tweets.04.02.2016.summary,
+                   tweets.04.03.2016.summary,
+                   tweets.04.04.2016.summary,
+                   tweets.04.05.2016.summary,
+                   tweets.04.06.2016.summary,
+                   tweets.04.07.2016.summary,
+                   tweets.04.08.2016.summary,
+                   tweets.04.09.2016.summary,
+                   tweets.04.10.2016.summary,
+                   tweets.04.11.2016.summary,
+                   tweets.04.12.2016.summary,
+                   tweets.04.13.2016.summary,
+                   tweets.04.14.2016.summary,
+                   tweets.04.15.2016.summary,
+                   tweets.04.16.2016.summary,
+                   tweets.04.17.2016.summary)
+
+# can't do this in one session. R Keeps crashing..........
 load("tweets.27-29Feb.Rda")
 load("tweets.22-26Feb.Rda")
 load("tweets.01-05April.RData")
@@ -70,7 +150,6 @@ load("tweets.06-15April.RData")
 load("tweets.06-10March.Rda")
 load("tweets.01-05March.Rda")
 
-# can't do this in one session. R Keeps crashing..........
 tweets_all <- rbind(tweets.02.07.2016, 
                     tweets.02.08.2016, 
                     tweets.02.09.2016, 
@@ -127,8 +206,7 @@ tweets_all <- rbind(tweets.02.07.2016,
                     tweets.04.08.2016,
                     tweets.04.09.2016,
                     tweets.04.10.2016,
-                    tweets.04.15.2016
-)
+                    tweets.04.15.2016)
 
 test <- tweets.04.15.2016
 
@@ -162,12 +240,7 @@ subset_tw <- function(filename){
 }
 
 
-
-
-subset_tw(test)
-
-
-
+subset_tw(tweets_all_sum)
 
 
 ##### starting here.....after force quit .... as a sample....
@@ -364,17 +437,8 @@ output$simple_Trump <- renderSimpleNetwork({
 ###########################################
 ####### More Mapping #########
 ###########################################
-
-#### functions
-
-## TODO: GET THIS SECTION OF THE CODE (OR YOUR CODE FROM HW 3 WORKING IN GENERAL) TO WORK! THEN MAKE IT INTO A FUNCTION. 
 world <- map_data("world")
 US_states <- map_data("state")
-
-##### Problem with ggplot and mapping
-#### getting a formatting error....
-
-points <- data.frame(x = as.numeric(as.character(us_coords$place_lon)), y = as.numeric(as.character(us_coords$place_lat)))
 
 map_gen_w <-function(filename){
   filtered_file <- filename[complete.cases(filename) ,]
