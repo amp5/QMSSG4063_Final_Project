@@ -7,21 +7,20 @@ setwd("/Users/amp2261/Desktop/Final_Project")
 ########################################
 #### Libraries Needed #######
 ########################################
-install.packages("RCurl")
-install.packages("rjson")
-install.packages("streamR")
-install.packages("RColorBrewer")
-install.packages("wordcloud")
-install.packages("NLP")
-install.packages("tm")
-install.packages("ggplot2")
-install.packages("sp")
-install.packages("maps")
-install.packages("maptools")
-install.packages("rworldmap")
-
+#install.packages("RCurl")
+#install.packages("rjson")
+#install.packages("streamR")
+#install.packages("RColorBrewer")
+#install.packages("wordcloud")
+#install.packages("NLP")
+#install.packages("tm")
+#install.packages("ggplot2")
+#install.packages("sp")
+#install.packages("maps")
+#install.packages("maptools")
+#install.packages("rworldmap")
 ### stopped installing here
-install.packages("Rstem")
+#install.packages("Rstem")
 
 
 library(bitops)
@@ -50,181 +49,25 @@ library(plyr)
 library(Rstem)
 gpclibPermit()
 
+
 ####################################################
 ######## Loading and creating subsets of data ######
 ####################################################
-load("/Users/amp2261/Desktop/wetransfer-684680/tweets.21_25.Rda")
+load("tweets_all_sent_mapped_r.Rdata")
+tweetsUS <- tweets_all_sent_mapped
 
-# loading sumary files to get better idea of bigger picture
-load("tweets.01-15Mar.summary.Rda")
-load("tweets.01-17Apr.summary.Rda")
-load("tweets.07-18Feb.summary.Rda")
-load("tweets.16-31Mar.summary.Rda")
-load("tweets.19-29Feb.summary.Rda")
-
-#useful_info <- c("text", "id_str", "created_at", "screen_name", "place_lat", "place_lon",  "lat", "lon", "country_code", "retweeted", "retweet_count")
-# tweets.03.31.2016.summary <- tweets.03.31.2016.summary[useful_info]
-
-tweets_all_sum <- rbind(tweets.02.07.2016.summary,
-                   tweets.02.08.2016.summary, 
-                   tweets.02.09.2016.summary, 
-                   tweets.02.10.2016.summary, 
-                   tweets.02.11.2016.summary, 
-                   tweets.02.12.2016.summary, 
-                   tweets.02.13.2016.summary,
-                   tweets.02.14.2016.summary,
-                   tweets.02.15.2016.summary,
-                   tweets.02.18.2016.summary,
-                   tweets.02.19.2016.summary,
-                   tweets.02.20.2016.summary,
-                   tweets.02.21.2016.summary,
-                   tweets.02.22.2016.summary,
-                   tweets.02.23.2016.summary,
-                   tweets.02.24.2016.summary,
-                   tweets.02.25.2016.summary,
-                   tweets.02.26.2016.summary,
-                   tweets.02.27.2016.summary,
-                   tweets.02.28.2016.summary,
-                   tweets.02.29.2016.summary,
-                   tweets.03.01.2016.summary,
-                   tweets.03.02.2016.summary,
-                   tweets.03.03.2016.summary,
-                   tweets.03.04.2016.summary,
-                   tweets.03.05.2016.summary,
-                   tweets.03.06.2016.summary,
-                   tweets.03.07.2016.summary,
-                   tweets.03.08.2016.summary,
-                   tweets.03.09.2016.summary,
-                   tweets.03.10.2016.summary,
-                   tweets.03.11.2016.summary,
-                   tweets.03.12.2016.summary,
-                   tweets.03.13.2016.summary,
-                   tweets.03.14.2016.summary,
-                   tweets.03.15.2016.summary,
-                   tweets.03.16.2016.summary,
-                   tweets.03.17.2016.summary,
-                   tweets.03.18.2016.summary,
-                   tweets.03.19.2016.summary,
-                   tweets.03.20.2016.summary,
-                   tweets.03.21.2016.summary,
-                   tweets.03.22.2016.summary,
-                   tweets.03.23.2016.summary,
-                   tweets.03.24.2016.summary,
-                   tweets.03.25.2016.summary,
-                   tweets.03.26.2016.summary,
-                   tweets.03.27.2016.summary,
-                   tweets.03.28.2016.summary,
-                   tweets.03.29.2016.summary,
-                   tweets.03.30.2016.summary,
-                   tweets.03.31.2016.summary,
-                   tweets.04.01.2016.summary,
-                   tweets.04.02.2016.summary,
-                   tweets.04.03.2016.summary,
-                   tweets.04.04.2016.summary,
-                   tweets.04.05.2016.summary,
-                   tweets.04.06.2016.summary,
-                   tweets.04.07.2016.summary,
-                   tweets.04.08.2016.summary,
-                   tweets.04.09.2016.summary,
-                   tweets.04.10.2016.summary,
-                   tweets.04.11.2016.summary,
-                   tweets.04.12.2016.summary,
-                   tweets.04.13.2016.summary,
-                   tweets.04.14.2016.summary,
-                   tweets.04.15.2016.summary,
-                   tweets.04.16.2016.summary,
-                   tweets.04.17.2016.summary)
-
-# can't do this in one session. R Keeps crashing..........
-load("tweets.27-29Feb.Rda")
-load("tweets.22-26Feb.Rda")
-load("tweets.01-05April.RData")
-load("tweets.21-25March.Rda")
-load("tweets.16-20March.Rda")
-
-load("tweets.15-21Feb.Rda")
-load("tweets.12-14Feb.Rda")
-load("tweets.11-15March.RData")
-load("tweets.07-11Feb.Rda")
-load("tweets.06-15April.RData")
-load("tweets.06-10March.Rda")
-load("tweets.01-05March.Rda")
-
-tweets_all <- rbind(tweets.02.07.2016, 
-                    tweets.02.08.2016, 
-                    tweets.02.09.2016, 
-                    tweets.02.10.2016, 
-                    tweets.02.11.2016, 
-                    tweets.02.12.2016,
-                    tweets.02.13.2016, 
-                    tweets.02.14.2016, 
-                    tweets.02.15.2016, 
-                    tweets.02.18.2016, 
-                    tweets.02.19.2016, 
-                    tweets.02.20.2016, 
-                    tweets.02.21.2016,
-                    tweets.02.22.2016, 
-                    tweets.02.23.2016, 
-                    tweets.02.24.2016, 
-                    tweets.02.25.2016,
-                    tweets.02.26.2016, 
-                    tweets.02.27.2016, 
-                    tweets.02.28.2016, 
-                    tweets.02.29.2016,
-                    tweets.03.01.2016,
-                    tweets.03.02.2016,
-                    tweets.03.03.2016,
-                    tweets.03.04.2016,
-                    tweets.03.05.2016,
-                    tweets.03.06.2016,
-                    tweets.03.07.2016,
-                    tweets.03.08.2016,
-                    tweets.03.09.2016,
-                    tweets.03.10.2016,
-                    tweets.03.11.2016,
-                    tweets.03.12.2016,
-                    tweets.03.13.2016,
-                    tweets.03.14.2016,
-                    tweets.03.15.2016,
-                    tweets.03.16.2016,
-                    tweets.03.17.2016,
-                    tweets.03.18.2016,
-                    tweets.03.19.2016,
-                    tweets.03.20.2016,
-                    tweets.03.21.2016, 
-                    tweets.03.22.2016, 
-                    tweets.03.23.2016, 
-                    tweets.03.24.2016, 
-                    tweets.03.25.2016, 
-                    tweets.04.01.2016,
-                    tweets.04.02.2016,
-                    tweets.04.03.2016,
-                    tweets.04.04.2016,
-                    tweets.04.05.2016,
-                    tweets.04.06.2016,
-                    tweets.04.07.2016,
-                    tweets.04.08.2016,
-                    tweets.04.09.2016,
-                    tweets.04.10.2016,
-                    tweets.04.15.2016)
-
-test <- tweets.04.15.2016
-
-
-# function could be useful when we want to look at the data by days or chunks of days
 subset_tw <- function(filename){
-  useful_info <- c("text", "id_str", "created_at", "screen_name", "place_lat", "place_lon",  "lat", "lon", "country_code", "retweeted", "retweet_count")
-  filtered <- filename[useful_info]
-  HC <- subset (filtered, grepl(pattern =  "Clinton | clinton | Hillary | hillary | Hillaryclinton | hillaryclinton | Hillary Clinton | hillary clinton" , 
-                                filtered$text, ignore.case = TRUE))
-  BS <- subset (filtered, grepl(pattern =  "Berniesanders | berniesanders | Bernie Sanders  | bernie sanders | Bernie | bernie | Sensanders | sensanders" , 
-                                filtered$text, ignore.case = TRUE))
-  TC <-  subset (filtered, grepl(pattern =  "Cruz | cruz | Ted | ted | Tedcruz | tedcruz | Ted Cruz | ted cruz" , 
-                                 filtered$text, ignore.case = TRUE))
-  DT <- subset (filtered, grepl(pattern =  "Donaldtrump  | donaldtrump | Donald Trump | donald trump | Trump | trump | Donald | donald | Trumpf | trumpf" , 
-                                filtered$text, ignore.case = TRUE))
-  MR <- subset (filtered, grepl(pattern =  "Marcorubio | marcorubio | Marco Rubio | marco rubio" , 
-                                filtered$text, ignore.case = TRUE))
+  filename$text <- sapply(filename$text,function(row) iconv(row, "latin1", "ASCII", sub=""))
+  HC <- subset (filename, grepl(pattern =  "Clinton | clinton | Hillary | hillary | Hillaryclinton | hillaryclinton | Hillary Clinton | hillary clinton" , 
+                                filename$text, ignore.case = TRUE))
+  BS <- subset (filename, grepl(pattern =  "Berniesanders | berniesanders | Bernie Sanders  | bernie sanders | Bernie | bernie | Sensanders | sensanders" , 
+                                filename$text, ignore.case = TRUE))
+  TC <-  subset (filename, grepl(pattern =  "Cruz | cruz | Ted | ted | Tedcruz | tedcruz | Ted Cruz | ted cruz" , 
+                                 filename$text, ignore.case = TRUE))
+  DT <- subset (filename, grepl(pattern =  "Donaldtrump  | donaldtrump | Donald Trump | donald trump | Trump | trump | Donald | donald | Trumpf | trumpf" , 
+                                filename$text, ignore.case = TRUE))
+  MR <- subset (filename, grepl(pattern =  "Marcorubio | marcorubio | Marco Rubio | marco rubio" , 
+                                filename$text, ignore.case = TRUE))
   # also by party
   dem <- rbind(HC, BS)
   rep <- rbind(TC, DT)
@@ -236,86 +79,34 @@ subset_tw <- function(filename){
   save (MR, file= 'MR.Rdata')
   save(dem, file='dem.Rdata')
   save(rep, file='rep.Rdata')
-  save (filtered, file= 'all_filtered.Rdata')
 }
 
+subset_tw(tweetsUS)
 
-subset_tw(tweets_all_sum)
 
-
-##### starting here.....after force quit .... as a sample....
-#setwd("/Users/amp2261/Desktop")
 load("HC.Rdata")
 load("BS.Rdata")
+load("TC.Rdata")
+load("DT.Rdata")
+load("dem.Rdata")
+load("rep.Rdata")
 
-
+testHC <- head(HC, 1000)
+testBS <- head(BS, 1000)
+testTC <- head(TC, 1000)
+testDT <- head(DT, 1000)
+testdem <- head(dem, 1000)
+testrep <- head(rep, 1000)
 
 
 
 ###########################################
 ####### Creating Word Cloud ########
 ###########################################
-# making word cloud function
-# adding in the name of the dataframe into this function will result in a worldcloud being generated
-wc <- function(filename){
-  filename$text <- sapply(filename$text,function(row) iconv(row, "latin1", "ASCII", sub=""))
-  TweetCorpus<-paste(unlist(filename$text), collapse =" ")
-  TweetCorpus <- Corpus(VectorSource(TweetCorpus))
-  TweetCorpus <- tm_map(TweetCorpus, removePunctuation)
-  TweetCorpus <- tm_map(TweetCorpus, removeWords, stopwords("english"))
-  #TweetCorpus <- tm_map(TweetCorpus, stemDocument)
-  TweetCorpus <- tm_map(TweetCorpus, content_transformer(tolower),lazy=TRUE)
-  TweetCorpus <- tm_map(TweetCorpus, PlainTextDocument)
-  TweetCorpus <- tm_map(TweetCorpus, removeWords, c("https",
-                                                    "https...",
-                                                    "via",
-                                                    "use",
-                                                    "just",
-                                                    "think",
-                                                    "say",
-                                                    "that",
-                                                    "its",
-                                                    "like",
-                                                    "this",
-                                                    "will",
-                                                    "the",
-                                                    "lol", 
-                                                    "now", 
-                                                    "one", 
-                                                    "still", 
-                                                    "whi",
-                                                    "amp",
-                                                    "let",
-                                                    "ill",
-                                                    "come",
-                                                    "shit",
-                                                    "and",
-                                                    "realli",
-                                                    "your",
-                                                    "you",
-                                                    "fuck",
-                                                    "last",
-                                                    "for",
-                                                    "much",
-                                                    "see",
-                                                    "got",
-                                                    "can",
-                                                    "get"
-  ))
-  return(wordcloud(TweetCorpus, min.freq = 900,  max.words = 500, random.order = FALSE, colors = brewer.pal(4, "Dark2")))
-}
-
-# does this work????
-wc_t <- function(filename){
-  return(wordcloud(tweet_corp(filename), min.freq = 900,  max.words = 500, random.order = FALSE, colors = brewer.pal(4, "Dark2")))
-}
-
-wc_t(HC)
-
 # creating a tweetcorpus, just insert the db filename into function, will receive TweetCorpus as a result
 # don't forget to set this to a var name
 #ex. bs_tc <- tweet_corp(BS)
-tweet_corp <- function(filename){
+tc <- function(filename){
   filename$text <- sapply(filename$text,function(row) iconv(row, "latin1", "ASCII", sub=""))
   TweetCorpus<-paste(unlist(filename$text), collapse =" ")
   TweetCorpus <- Corpus(VectorSource(TweetCorpus))
@@ -361,6 +152,10 @@ tweet_corp <- function(filename){
                                                     "get"
   ))
   return(TweetCorpus)
+}
+
+wc_t <- function(filename){
+  return(wordcloud(tweet_corp(filename), min.freq = 900,  max.words = 500, random.order = FALSE, colors = brewer.pal(4, "Dark2")))
 }
 
 ###########################################
@@ -451,7 +246,6 @@ map_gen_w <-function(filename){
 map_gen_s <-function(filename){
   filtered_file <- filename[complete.cases(filename) ,]
   filtered_file <- filtered_file[filtered_file$country_code=='US',] 
-  str(filename)
   ggplot(US_states) + geom_map(aes(map_id = region), map = US_states, fill = "grey90", color = "grey50", size = 0.25) + 
     expand_limits(x = as.numeric(as.character(US_states$long)), y = as.numeric(as.character(US_states$lat))) + 
     scale_x_continuous("Longitude") + scale_y_continuous("Latitude") + theme_minimal() + 
@@ -509,7 +303,64 @@ state_mp_cnt <- function(filename){
 ##############################################
 ########## Sentiment Analysis ################
 ##############################################
+# key terms lexicon
+lexicon <- read.csv("lexicon_ps.csv", stringsAsFactors=F)
+econ.words <- lexicon$word[lexicon$polarity=="economy"]
+imm.words <- lexicon$word[lexicon$polarity=="immigration"]
+health.words <- lexicon$word[lexicon$polarity=="health_care"]
+military.words <- lexicon$word[lexicon$polarity=="military"]
+gun.words <- lexicon$word[lexicon$polarity=="gun_control"]
+china.words <- lexicon$word[lexicon$polarity=="china"]
+trade.words <- lexicon$word[lexicon$polarity=="trade"]
+race.words <- lexicon$word[lexicon$polarity=="race"]
+climate.words <- lexicon$word[lexicon$polarity=="climate_change"]
+religion.words <- lexicon$word[lexicon$polarity=="religion"]
 
+tc_countT <- function(filename, fname, person){
+  econ <- sum(str_count(filename, econ.words))
+  imm <- sum(str_count(filename, imm.words))
+  health <- sum(str_count(filename, health.words))
+  military <- sum(str_count(filename, military.words))
+  gun <- sum(str_count(filename, gun.words))
+  china <- sum(str_count(filename, china.words))
+  trade <- sum(str_count(filename, trade.words))
+  race <- sum(str_count(filename, race.words))
+  climate <- sum(str_count(filename, climate.words))
+  religion <- sum(str_count(filename, religion.words))
+  
+  fn_df = data.frame(econ, 
+                     imm, 
+                     health, 
+                     military, 
+                     gun, 
+                     china,
+                     trade,
+                     race, 
+                     climate, 
+                     religion)
+  write.csv(fn_df, file = fname)
+  return(cnvrt_df(fn_df, person))
+}
+
+cnvrt_df <- function(filename, nameC){
+  filename$X <- NULL
+  filename <-t(filename)
+  filename <- data.frame(filename)
+  names(filename)[1]<-paste("num")
+  filename$term <- rownames(filename)
+  filename$name <- nameC
+  filename$rate <- filename$num / sum(filename$num)
+  return(filename)
+}
+
+term_plots <- function(data, title, color){
+  ggplot(data=data, aes(x=term, y=rate, fill=name)) +
+    geom_bar(stat="identity", position=position_dodge())  +
+    scale_fill_manual(values=color) +
+    ggtitle(title)
+}
+
+#positivity key terms lexicon
 lexicon <- read.csv("lexicon.csv", stringsAsFactors=F)
 positive.words <- lexicon$word[lexicon$polarity=="positive"]
 negative.words <- lexicon$word[lexicon$polarity=="negative"]
@@ -524,8 +375,6 @@ sentiment <- function(filename, name_csv){
   
 }
 
-
-
 plot_polarity <- function(filename){
   ggplot(data=filename, aes(x=polarity, y=rate)) +
     geom_bar(stat="identity", position=position_dodge())  +
@@ -533,31 +382,73 @@ plot_polarity <- function(filename){
     ggtitle("Polarity of Candidate")
 }
 
-
-
-
-
-#############################################################
-# Calling functions from above here
-
+########################### Calling functions ##################################
 
 # wordclouds
-wc(HC)
-
+wc_t(testHC)
+wc_t(testBS)
+wc_t(testTC)
+wc_t(testDT)
+wc_t(testdem)
+wc_t(testrep)
 
 # generating social network
 ## TBD
 
 # building general map
-map_tweets(HC)
+map_tweets(testHC)
+map_tweets(testBS)
+map_tweets(testTC)
+map_tweets(testDT)
+map_tweets(testdem)
+map_tweets(testrep)
+
 
 # generating maps
-## First two don't work....
-map_gen_w(BS)
-map_gen_s(HC)
-state_mp_cnt(HC)
+# world map not that useful for us....
+map_gen_w(testHC)
+
+map_gen_s(testHC)
+map_gen_s(testBS)
+map_gen_s(testTC)
+map_gen_s(testDT)
+map_gen_s(testdem)
+map_gen_s(testrep)
+
+
+
+#problem with this function
+state_mp_cnt(testHC)
 
 # sentiment analysis
+
+# for terms
+final_countHC <- tc_countT(tc(testHC) , "HC_topics.csv", "Hillary Clinton")
+final_countBS <- tc_countT(tc(testBS) , "BS_topics.csv", "Bernie Sanders")
+final_countTC <- tc_countT(tc(testTC) , "TC_topics.csv", "Ted Cruz")
+final_countDT <- tc_countT(tc(testDT) , "DT_topics.csv", "Donald Trump")
+final_count_dem <- tc_countT(tc(testdem) , "dem_topics.csv", "Democrats")
+final_count_rep <- tc_countT(tc(testrep) , "rep_topics.csv", "Republican")
+
+final_count_dems <- rbind(final_countHC, final_countBS)
+final_count_reps <- rbind(final_countTC, final_countDT)
+final_count_parties <- rbind(final_count_dem, final_count_rep)
+
+#dems
+color1 <- c("#99CCFF", "#003399")
+#reps
+color2 <- c("#FF9999", "#FF6666")
+#both parties
+color3 <- c("#6699FF", "#FF6666")
+
+term_plots(final_count_dems, "Rate of Topics per Democratic Candidate", color1)
+term_plots(final_count_reps, "Rate of Topics per Republican Candidate", color2)
+term_plots(final_count_parties, "Rate of Topics per Political Party", color3)
+
+
+
+###### fix this function part....
+# for neg and pos
 sentiment(HC, "HC_polarity.csv")
 ########
 ## before this we have to create rates by hand on csv file........
