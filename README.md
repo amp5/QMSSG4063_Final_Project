@@ -1,6 +1,8 @@
 # QMSSG4063_Final_Project
 Final Project Looking at Tweets During Presidential Primaries
 
+The final paper with additional information and visulizations can be found in this repo uner 'QMSSFinalReport.pdf'
+
 ## Background
 This data consists of Tweets with specific hashtags collected from February 7th, 2016 to April 2nd, 2016 that referred to the presidential primaries that were taking place earlier this year. Below are links to Data Processing and Data Visualization’s github page as well as a link to the original JSON data containing all tweets scraped. 
 
